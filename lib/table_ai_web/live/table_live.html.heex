@@ -1,0 +1,9 @@
+<.simple_form for={@form} phx-submit="save" phx-change="edit">
+  <.input name="query" value="" id={@query_id} label="Enter your question" />
+</.simple_form>
+<br />
+<br />
+
+<.table id="rows" rows={@rows}>
+  <:col :let={row} label="Result"><%= row %></:col>
+</.table>
