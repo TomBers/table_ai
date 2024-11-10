@@ -4,8 +4,6 @@ defmodule TableAiWeb.TableLive do
   import TableAiWeb.CoreComponents
 
   def mount(params, _session, socket) do
-    IO.inspect(params)
-
     path =
       case Map.get(params, "path") do
         nil ->
@@ -17,16 +15,23 @@ defmodule TableAiWeb.TableLive do
 
     {:ok,
      socket
-     |> assign(form: %{}, path: path, rows: [], query_id: UUID.generate())}
+     |> assign(
+       form: %{},
+       path: path,
+       headers: ["Headers"],
+       rows: [],
+       query_id: UUID.generate()
+     )}
   end
 
   def handle_event("save", %{"query" => query}, socket) do
     pid = self()
-    TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
+    {headers, _rows} = TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
+    IO.inspect(headers, label: "HEADERS")
 
     {:noreply,
      socket
-     |> assign(query_id: UUID.generate(), rows: [])}
+     |> assign(query_id: UUID.generate(), headers: headers)}
   end
 
   def handle_event("edit", _params, socket) do
@@ -36,5 +41,9 @@ defmodule TableAiWeb.TableLive do
   def handle_info({:rows, rows}, socket) do
     IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
     {:noreply, socket |> assign(rows: socket.assigns.rows ++ rows)}
+  end
+
+  def row_string(rows) do
+    "Rows: #{Enum.count(rows)}"
   end
 end
