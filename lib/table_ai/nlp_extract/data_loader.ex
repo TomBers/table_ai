@@ -8,7 +8,7 @@ defmodule TableAi.NlpExtract.DataLoader do
   # end
 
   def file(path) do
-    take = 1_00_000
+    take = 50_000
 
     File.stream!(path, [], :line)
     |> CSV.decode!()

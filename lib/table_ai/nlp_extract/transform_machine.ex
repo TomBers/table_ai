@@ -5,7 +5,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
   def emit_results(res, df, pid) do
     run_filters(res, df)
-    |> Stream.chunk_every(200)
+    |> Stream.chunk_every(500)
     |> Stream.each(fn rows ->
       formatted_rows =
         Enum.map(rows, fn row ->
