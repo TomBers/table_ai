@@ -77,8 +77,10 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
   def filter_by_date(data, column_index, from_date, to_date) do
     Stream.filter(data, fn row ->
-      date = Enum.at(row, column_index) |> Date.from_iso8601!()
-      Date.after?(date, from_date) and Date.before?(date, to_date)
+      case Enum.at(row, column_index) |> Date.from_iso8601() do
+        {:ok, date} -> Date.after?(date, from_date) and Date.before?(date, to_date)
+        _ -> false
+      end
     end)
   end
 

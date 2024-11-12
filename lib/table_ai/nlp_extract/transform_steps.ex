@@ -42,6 +42,18 @@ defmodule TableAi.NlpExtract.TransformSteps do
       %{"method" => "limit", "number" => 5},
       %{"columns" => [2, 3, 9], "method" => "filter_column"}
     ]
+
+    # "Can you get me all the info for customers who joined between 2021 and 2023"
+
+    [
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "from" => "2021-01-01",
+        "method" => "fillter_row_by_range",
+        "to" => "2023-01-01"
+      }
+    ]
   end
 
   def get_headers(res, columns) do

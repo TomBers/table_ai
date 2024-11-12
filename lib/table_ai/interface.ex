@@ -10,7 +10,7 @@ defmodule TableAi.Interface do
     columns = Enum.take(df, 1) |> Enum.at(0)
     # ------------
     # prompt =
-    #   "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] it has 100 rows and the question #{query}."
+    #   "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
 
     # instructions = SystemInstruction.get()
     # {:ok, res} = TransformSteps.get(prompt, instructions)
