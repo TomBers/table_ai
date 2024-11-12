@@ -1,8 +1,5 @@
 defmodule TableAi.Interface do
-  alias TableAi.NlpExtract.TransformMachine
-  alias TableAi.NlpExtract.SystemInstruction
-  alias TableAi.NlpExtract.DataLoader
-  alias TableAi.NlpExtract.TransformSteps
+  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
 
   def gen_rows(file_path, query, pid) do
     df = DataLoader.file(file_path)

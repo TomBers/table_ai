@@ -1,6 +1,6 @@
 defmodule TableAi.NlpExtract.TransformMachine do
   def return_results(res, df, take \\ 5) do
-    run_filters(res, df) |> Enum.take(take) |> Enum.map(&(Enum.to_list(&1) |> Enum.join(", ")))
+    run_filters(res, df) |> Enum.take(take) |> Enum.map(&Enum.to_list(&1))
   end
 
   def emit_results(res, df, pid) do
@@ -89,6 +89,39 @@ defmodule TableAi.NlpExtract.TransformMachine do
     end)
   end
 
+  def get_errors(data, column_index, type) do
+    case type do
+      "date" -> type_errors(data, column_index, type, &Date.from_iso8601/1)
+      "int" -> type_errors(data, column_index, type, &Integer.parse/1)
+      "float" -> type_errors(data, column_index, type, &Float.parse/1)
+      "timestamp" -> type_errors(data, column_index, type, &DateTime.from_iso8601/1)
+      _ -> []
+    end
+  end
+
+  def type_errors(data, column_index, type, conv_fn) do
+    data
+    |> Stream.with_index()
+    |> Stream.filter(fn {row, row_index} ->
+      case Enum.at(row, column_index) |> conv_fn.() do
+        {:error, _} ->
+          true
+
+        _ ->
+          false
+      end
+    end)
+    |> Stream.map(fn {row, row_index} ->
+      %{
+        row_index: row_index,
+        column_index: column_index,
+        error: "Invalid " <> type,
+        data: Enum.at(row, column_index)
+      }
+    end)
+    |> Stream.reject(fn row -> row.row_index == 0 end)
+  end
+
   def filter_by_timestamp(data, column_index, from_dt, to_dt) do
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> DateTime.from_iso8601() do
@@ -118,5 +151,25 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
   def extact_columns(row, columns) do
     Stream.map(columns, fn col -> Enum.at(row, col) end)
+  end
+
+  def fix_errors(df, errors) do
+    errors
+    |> Enum.reduce(df, fn error, acc ->
+      row_index = error.row_index
+      column_index = error.column_index
+      data = error.error
+      acc |> fix_error(row_index, column_index, data)
+    end)
+  end
+
+  def fix_error(df, row_index, col_index, new_data) do
+    row = Enum.at(df, row_index)
+
+    # # Step 2: Replace the element at the specified column index in the row
+    updated_row = List.replace_at(row, col_index, new_data)
+
+    # # Step 3: Replace the old row with the updated row in the table
+    List.replace_at(df, row_index, updated_row)
   end
 end
