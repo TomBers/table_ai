@@ -153,7 +153,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     Stream.map(columns, fn col -> Enum.at(row, col) end)
   end
 
-  def fix_errors(df, errors) do
+  def fix_errors(errors, df) do
     errors
     |> Enum.reduce(df, fn error, acc ->
       row_index = error["row_index"]

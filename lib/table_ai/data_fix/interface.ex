@@ -5,7 +5,7 @@ defmodule TableAi.DataFix.Interface do
   def run do
     df = DataLoader.file("priv/static/uploads/live_view_upload-1731265586-487875740739-7")
 
-    columns = Enum.take(df, 1) |> Enum.at(0)
+    # columns = Enum.take(df, 1) |> Enum.at(0)
 
     res = TransformSteps.example_steps()
 
@@ -16,11 +16,15 @@ defmodule TableAi.DataFix.Interface do
       TransformMachine.get_errors(df, range_filter["column_index"], range_filter["column_type"])
       |> Enum.to_list()
 
-    llm_fixes = AutoFixer.run_fixer(errors)
+    results =
+      if Enum.count(errors) > 0 do
+        AutoFixer.run_fixer(errors)
+        |> TransformMachine.fix_errors(df)
+        |> TransformMachine.return_results(res, 100)
+      else
+        TransformMachine.return_results(df, res, 100)
+      end
 
-    # TODO - send the errors to the LLM to get fixed errors, then update the original data frame and run the steps
-
-    TransformMachine.fix_errors(df, llm_fixes)
-    |> TransformMachine.return_results(res, 100)
+    IO.inspect(Enum.count(results))
   end
 end
