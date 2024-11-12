@@ -3,34 +3,44 @@ defmodule TableAi.NlpExtract.TransformSteps do
   alias OpenaiEx.ChatMessage
 
   def example_steps do
+    # Can I get name and email from the last 5 customers from Europe
     [
       %{
         "filters" => [
           "United Kingdom",
-          "France",
           "Germany",
+          "France",
           "Italy",
           "Spain",
           "Netherlands",
-          "Belgium",
-          "Sweden",
-          "Switzerland",
-          "Norway",
-          "Denmark",
-          "Finland",
-          "Ireland",
-          "Austria",
-          "Portugal",
           "Greece",
-          "Czech Republic",
+          "Sweden",
           "Poland",
+          "Belgium",
+          "Finland",
+          "Denmark",
+          "Ireland",
+          "Portugal",
+          "Austria",
           "Hungary",
-          "Luxembourg"
+          "Czech Republic",
+          "Romania",
+          "Bulgaria",
+          "Slovakia",
+          "Croatia",
+          "Estonia",
+          "Slovenia",
+          "Latvia",
+          "Lithuania",
+          "Luxembourg",
+          "Malta",
+          "Cyprus"
         ],
         "method" => "filter_row",
         "row_index" => 6
       },
-      %{"columns" => [2, 3, 4, 6, 9], "method" => "filter_column"}
+      %{"method" => "limit", "number" => 5},
+      %{"columns" => [2, 3, 9], "method" => "filter_column"}
     ]
   end
 

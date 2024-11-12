@@ -7,10 +7,11 @@ defmodule TableAi.Interface do
   def gen_rows(file_path, query, pid) do
     df = DataLoader.file(file_path)
 
-    # ------------
     columns = Enum.take(df, 1) |> Enum.at(0)
+    # ------------
+    # prompt =
+    #   "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] it has 100 rows and the question #{query}."
 
-    # prompt = "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
     # instructions = SystemInstruction.get()
     # {:ok, res} = TransformSteps.get(prompt, instructions)
     # ------------

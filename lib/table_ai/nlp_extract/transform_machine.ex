@@ -21,22 +21,37 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
   def run_filters(res, df) do
     res
-    |> Enum.reduce(df, fn res, acc ->
-      case res do
-        %{"method" => "filter_row"} ->
-          expanded_filters = expand_filters(res["filters"])
-          acc |> filter_row(res["row_index"], expanded_filters)
+    |> Enum.reduce(df, fn
+      res, acc ->
+        case res do
+          %{"method" => "filter_row"} ->
+            expanded_filters = expand_filters(res["filters"])
+            acc |> filter_row(res["row_index"], expanded_filters)
 
-        # TODO make this more generic - currently only works for date columns
-        # Consider range of typess - Date, String, Integer, Float
-        %{"method" => "filter_by_date"} ->
-          from_date = Date.from_iso8601!(res["from_date"])
-          to_date = Date.from_iso8601!(res["to_date"])
-          acc |> filter_by_date(res["column_index"], from_date, to_date)
+          %{"method" => "fillter_row_by_range"} ->
+            case res["column_type"] do
+              "date" ->
+                from_date = Date.from_iso8601!(res["from"])
+                to_date = Date.from_iso8601!(res["to"])
+                acc |> filter_by_date(res["column_index"], from_date, to_date)
 
-        %{"method" => "filter_column"} ->
-          acc |> filter_column(res["columns"])
-      end
+              "int" ->
+                from_int = res["from"]
+                to_int = res["to"]
+                acc |> filter_by_int(res["column_index"], from_int, to_int)
+
+              "float" ->
+                from_float = res["from"]
+                to_float = res["to"]
+                acc |> filter_by_float(res["column_index"], from_float, to_float)
+            end
+
+          %{"method" => "filter_column"} ->
+            acc |> filter_column(res["columns"])
+
+          %{"method" => "limit"} ->
+            acc |> Stream.take(res["number"])
+        end
     end)
   end
 
@@ -51,7 +66,8 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
   def filter_row(data, row_index, filters) do
     Stream.filter(data, fn row ->
-      MapSet.member?(filters, Enum.at(row, row_index))
+      Enum.any?(filters, fn filter -> String.contains?(Enum.at(row, row_index), filter) end)
+      # MapSet.member?(filters, Enum.at(row, row_index))
     end)
   end
 
@@ -63,6 +79,24 @@ defmodule TableAi.NlpExtract.TransformMachine do
     Stream.filter(data, fn row ->
       date = Enum.at(row, column_index) |> Date.from_iso8601!()
       Date.after?(date, from_date) and Date.before?(date, to_date)
+    end)
+  end
+
+  def filter_by_int(data, column_index, from_int, to_int) do
+    Stream.filter(data, fn row ->
+      case Enum.at(row, column_index) |> Integer.parse() do
+        {int, _} -> int >= from_int and int <= to_int
+        _ -> false
+      end
+    end)
+  end
+
+  def filter_by_float(data, column_index, from_float, to_float) do
+    Stream.filter(data, fn row ->
+      case Enum.at(row, column_index) |> Float.parse() do
+        {float, _} -> float >= from_float and float <= to_float
+        _ -> false
+      end
     end)
   end
 
