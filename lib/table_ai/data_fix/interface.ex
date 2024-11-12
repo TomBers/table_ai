@@ -9,6 +9,7 @@ defmodule TableAi.DataFix.Interface do
 
     res = TransformSteps.example_steps()
 
+    # TODO - there might be multiple range filters, so we need to handle that
     range_filter = Enum.find(res, fn step -> step["method"] == "fillter_row_by_range" end)
 
     errors =
@@ -19,8 +20,7 @@ defmodule TableAi.DataFix.Interface do
 
     # TODO - send the errors to the LLM to get fixed errors, then update the original data frame and run the steps
 
-    fixed = TransformMachine.fix_errors(df, llm_fixes)
-
-    TransformMachine.return_results(res, fixed, 100)
+    TransformMachine.fix_errors(df, llm_fixes)
+    |> TransformMachine.return_results(res, 100)
   end
 end

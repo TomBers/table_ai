@@ -1,5 +1,5 @@
 defmodule TableAi.NlpExtract.TransformMachine do
-  def return_results(res, df, take \\ 5) do
+  def return_results(df, res, take \\ 5) do
     run_filters(res, df) |> Enum.take(take) |> Enum.map(&Enum.to_list(&1))
   end
 
@@ -159,17 +159,24 @@ defmodule TableAi.NlpExtract.TransformMachine do
       row_index = error["row_index"]
       column_index = error["column_index"]
       data = error["fixed_data"]
-      acc |> fix_error(row_index, column_index, data)
+      fix_error(acc, row_index, column_index, data)
     end)
   end
 
-  def fix_error(df, row_index, col_index, new_data) do
-    row = Enum.at(df, row_index)
+  defp fix_error(df, row_index, col_index, new_data) do
+    # Convert the stream to a list if it's not already a list
+    df_list = if is_list(df), do: df, else: Enum.to_list(df)
 
-    # # Step 2: Replace the element at the specified column index in the row
-    updated_row = List.replace_at(row, col_index, new_data)
+    # Retrieve the row as a list
+    row = Enum.at(df_list, row_index)
 
-    # # Step 3: Replace the old row with the updated row in the table
-    List.replace_at(df, row_index, updated_row)
+    # Ensure the row is a list
+    row_list = if is_list(row), do: row, else: Enum.to_list(row)
+
+    # Replace the element at the specified column index in the row
+    updated_row = List.replace_at(row_list, col_index, new_data)
+
+    # Replace the old row with the updated row in the DataFrame
+    List.replace_at(df_list, row_index, updated_row)
   end
 end
