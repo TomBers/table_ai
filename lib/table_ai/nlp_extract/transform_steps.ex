@@ -30,8 +30,24 @@ defmodule TableAi.NlpExtract.TransformSteps do
         "method" => "filter_row",
         "row_index" => 6
       },
-      %{"columns" => [0, 2, 3, 4, 6, 9], "method" => "filter_column"}
+      %{"columns" => [2, 3, 4, 6, 9], "method" => "filter_column"}
     ]
+  end
+
+  def get_headers(res, columns) do
+    cols =
+      res
+      |> Enum.find(fn x -> x["method"] == "filter_column" end)
+
+    case cols do
+      nil ->
+        columns
+
+      _ ->
+        cols
+        |> Map.get("columns")
+        |> Enum.map(fn x -> Enum.at(columns, x) end)
+    end
   end
 
   def get(prompt, transform_instructions) do

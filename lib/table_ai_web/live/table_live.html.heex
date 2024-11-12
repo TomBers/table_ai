@@ -4,7 +4,7 @@
 <br />
 <br />
 
-<p>Results: <%= length(@rows) %></p>
+<%= @headers |> Enum.join(", ") %>
 <.table id="rows" rows={@rows}>
-  <:col :let={row} label="Result"><%= row %></:col>
+  <:col :let={row} label={row_string(@rows)}><%= row %></:col>
 </.table>
