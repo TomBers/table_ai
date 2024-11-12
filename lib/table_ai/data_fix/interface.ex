@@ -13,14 +13,14 @@ defmodule TableAi.DataFix.Interface do
 
     errors =
       TransformMachine.get_errors(df, range_filter["column_index"], range_filter["column_type"])
+      |> Enum.to_list()
 
     llm_fixes = AutoFixer.run_fixer(errors)
 
     # TODO - send the errors to the LLM to get fixed errors, then update the original data frame and run the steps
 
-    # Fix the errors before executing the transformation
-    # table = df |> Enum.take(15)
+    fixed = TransformMachine.fix_errors(df, llm_fixes)
 
-    # TransformMachine.fix_errors(table, llm_fixes)
+    TransformMachine.return_results(res, fixed, 100)
   end
 end

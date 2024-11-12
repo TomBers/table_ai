@@ -156,9 +156,9 @@ defmodule TableAi.NlpExtract.TransformMachine do
   def fix_errors(df, errors) do
     errors
     |> Enum.reduce(df, fn error, acc ->
-      row_index = error.row_index
-      column_index = error.column_index
-      data = error.error
+      row_index = error["row_index"]
+      column_index = error["column_index"]
+      data = error["fixed_data"]
       acc |> fix_error(row_index, column_index, data)
     end)
   end
