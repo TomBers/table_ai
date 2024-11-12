@@ -27,6 +27,8 @@ defmodule TableAi.NlpExtract.TransformMachine do
           expanded_filters = expand_filters(res["filters"])
           acc |> filter_row(res["row_index"], expanded_filters)
 
+        # TODO make this more generic - currently only works for date columns
+        # Consider range of typess - Date, String, Integer, Float
         %{"method" => "filter_by_date"} ->
           from_date = Date.from_iso8601!(res["from_date"])
           to_date = Date.from_iso8601!(res["to_date"])
