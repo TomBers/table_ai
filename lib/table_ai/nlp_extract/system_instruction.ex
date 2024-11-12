@@ -16,9 +16,9 @@ defmodule TableAi.NlpExtract.SystemInstruction do
       - **Description:** Returns all rows where the value in the column specified is between `from` and `to`.
       - **Parameters:**
         - `column_index` (integer): The index of the column to apply the filter on.
-        - 'column_type' (string): The type of the column to filter by. Can be 'date', 'int', or 'float'.
-        - `from` (type): The start for the filter.
-        - `to`(type): The end for the filter.
+        - 'column_type' (string): The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', or 'float'].
+        - `from` (column_type): The start for the filter.
+        - `to`(column_type): The end for the filter.
 
     3. **filter_column(data, columns):**
         - **Description:** Returns only the columns specified in the `columns` list.
@@ -42,6 +42,7 @@ defmodule TableAi.NlpExtract.SystemInstruction do
       {
         "method": "fillter_row_by_range",
         "column_index": 4,
+        'column_type': 'date',
         "from": "2020-01-01",
         "to": "2021-01-01"
       }

@@ -44,6 +44,11 @@ defmodule TableAi.NlpExtract.TransformMachine do
                 from_float = res["from"]
                 to_float = res["to"]
                 acc |> filter_by_float(res["column_index"], from_float, to_float)
+
+              "timestamp" ->
+                from_dt = DateTime.from_iso8601(res["from"])
+                to_dt = DateTime.from_iso8601(res["to"])
+                acc |> filter_by_timestamp(res["column_index"], from_dt, to_dt)
             end
 
           %{"method" => "filter_column"} ->
@@ -79,6 +84,15 @@ defmodule TableAi.NlpExtract.TransformMachine do
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> Date.from_iso8601() do
         {:ok, date} -> Date.after?(date, from_date) and Date.before?(date, to_date)
+        _ -> false
+      end
+    end)
+  end
+
+  def filter_by_timestamp(data, column_index, from_dt, to_dt) do
+    Stream.filter(data, fn row ->
+      case Enum.at(row, column_index) |> DateTime.from_iso8601() do
+        {:ok, dt, _} -> DateTime.after?(dt, from_dt) and DateTime.before?(dt, to_dt)
         _ -> false
       end
     end)
