@@ -55,6 +55,7 @@ defmodule TableAi.NlpExtract.TransformSteps do
       }
     ]
 
+    # Get Last 5 customers who signed up
     [
       %{
         "column_index" => 10,
@@ -63,6 +64,60 @@ defmodule TableAi.NlpExtract.TransformSteps do
         "number" => 5,
         "order" => "desc"
       }
+    ]
+
+    # Can you get me company and email of the last 10 people to signup from Europe?
+    [
+      %{
+        "filters" => [
+          "United Kingdom",
+          "France",
+          "Germany",
+          "Italy",
+          "Spain",
+          "Netherlands",
+          "Belgium",
+          "Sweden",
+          "Denmark",
+          "Ireland",
+          "Portugal",
+          "Finland",
+          "Poland",
+          "Austria",
+          "Switzerland",
+          "Norway",
+          "Greece",
+          "Hungary",
+          "Czech Republic",
+          "Romania",
+          "Luxembourg",
+          "Slovakia",
+          "Bulgaria",
+          "Croatia",
+          "Slovenia",
+          "Estonia",
+          "Latvia",
+          "Lithuania",
+          "Cyprus",
+          "Malta",
+          "Iceland",
+          "Liechtenstein",
+          "Monaco",
+          "San Marino",
+          "Andorra",
+          "Vatican City"
+        ],
+        "method" => "filter_row",
+        "row_index" => 6
+      },
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "method" => "limit",
+        "number" => 10,
+        "order" => "desc"
+      },
+      %{"columns" => [4, 9], "method" => "filter_column"}
     ]
   end
 

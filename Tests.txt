@@ -1,0 +1,33 @@
+Test Question - Can you get me company and email of the last 10 people to signup from Europe?
+
+%{
+  "choices" => [
+    %{
+      "finish_reason" => "stop",
+      "index" => 0,
+      "logprobs" => nil,
+      "message" => %{
+        "content" => "```json\n[\n  {\n    \"method\": \"filter_row\",\n    \"row_index\": 6,\n    \"filters\": [\"United Kingdom\", \"France\", \"Germany\", \"Italy\", \"Spain\", \"Netherlands\", \"Belgium\", \"Sweden\", \"Denmark\", \"Ireland\", \"Portugal\", \"Finland\", \"Poland\", \"Austria\", \"Switzerland\", \"Norway\", \"Greece\", \"Hungary\", \"Czech Republic\", \"Romania\", \"Luxembourg\", \"Slovakia\", \"Bulgaria\", \"Croatia\", \"Slovenia\", \"Estonia\", \"Latvia\", \"Lithuania\", \"Cyprus\", \"Malta\", \"Iceland\", \"Liechtenstein\", \"Monaco\", \"San Marino\", \"Andorra\", \"Vatican City\"]\n  },\n  {\n    \"method\": \"limit\",\n    \"number\": 10,\n    \"column_index\": 10,\n    \"column_type\": \"date\",\n    \"order\": \"desc\"\n  },\n  {\n    \"method\": \"filter_column\",\n    \"columns\": [4, 9]\n  }\n]\n```",
+        "refusal" => nil,
+        "role" => "assistant"
+      }
+    }
+  ],
+  "created" => 1731494691,
+  "id" => "chatcmpl-AT59fjul5Nm8Z6mQjggDW4MhbaJRw",
+  "model" => "gpt-4o-2024-08-06",
+  "object" => "chat.completion",
+  "system_fingerprint" => "fp_159d8341cc",
+  "usage" => %{
+    "completion_tokens" => 240,
+    "completion_tokens_details" => %{
+      "accepted_prediction_tokens" => 0,
+      "audio_tokens" => 0,
+      "reasoning_tokens" => 0,
+      "rejected_prediction_tokens" => 0
+    },
+    "prompt_tokens" => 693,
+    "prompt_tokens_details" => %{"audio_tokens" => 0, "cached_tokens" => 0},
+    "total_tokens" => 933
+  }
+}
