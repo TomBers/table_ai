@@ -35,6 +35,11 @@ defmodule TableAi.NlpExtract.TransformMachine do
                 to_date = Date.from_iso8601!(res["to"])
                 acc |> filter_by_date(res["column_index"], from_date, to_date)
 
+              "timestamp" ->
+                from_dt = DateTime.from_iso8601(res["from"])
+                to_dt = DateTime.from_iso8601(res["to"])
+                acc |> filter_by_timestamp(res["column_index"], from_dt, to_dt)
+
               "int" ->
                 from_int = res["from"]
                 to_int = res["to"]
@@ -44,18 +49,21 @@ defmodule TableAi.NlpExtract.TransformMachine do
                 from_float = res["from"]
                 to_float = res["to"]
                 acc |> filter_by_float(res["column_index"], from_float, to_float)
-
-              "timestamp" ->
-                from_dt = DateTime.from_iso8601(res["from"])
-                to_dt = DateTime.from_iso8601(res["to"])
-                acc |> filter_by_timestamp(res["column_index"], from_dt, to_dt)
             end
 
           %{"method" => "filter_column"} ->
             acc |> filter_column(res["columns"])
 
           %{"method" => "limit"} ->
-            acc |> Stream.take(res["number"])
+            # Assume first row is the header
+            limit = res["number"] + 1
+
+            [_h | t] =
+              acc
+              |> order_by_column(res["column_index"], res["column_type"], res["order"])
+              |> Enum.take(limit)
+
+            t
         end
     end)
   end
@@ -87,6 +95,53 @@ defmodule TableAi.NlpExtract.TransformMachine do
         _ -> false
       end
     end)
+  end
+
+  def order_by_column(data, column_index, ~c"date", order) do
+    data
+    |> Enum.sort_by(
+      fn row ->
+        case Date.from_iso8601(Enum.at(row, column_index)) do
+          {:ok, date} -> date
+          _ -> Date.from_iso8601("0000-01-01")
+        end
+      end,
+      {String.to_atom(order), Date}
+    )
+  end
+
+  def order_by_column(data, column_index, ~c"timestamp", order) do
+    data
+    |> Enum.sort_by(
+      fn row ->
+        case DateTime.from_iso8601(Enum.at(row, column_index)) do
+          {:ok, datetime, _} -> datetime
+          _ -> DateTime.from_iso8601("0000-01-01T00:00:00Z")
+        end
+      end,
+      {String.to_atom(order), DateTime}
+    )
+  end
+
+  def order_by_column(data, column_index, column_type, order) do
+    data
+    |> Enum.sort_by(
+      fn row ->
+        case column_type do
+          "int" -> Integer.parse(Enum.at(row, column_index))
+          "float" -> Float.parse(Enum.at(row, column_index))
+          _ -> Enum.at(row, column_index)
+        end
+      end,
+      String.to_atom(order)
+    )
+  end
+
+  def parse_date(val) do
+    case Date.from_iso8601(val) do
+      {:ok, date} -> date
+      _ -> nil
+    end
   end
 
   def get_errors(data, column_index, type) do

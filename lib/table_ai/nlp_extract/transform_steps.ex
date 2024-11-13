@@ -54,6 +54,16 @@ defmodule TableAi.NlpExtract.TransformSteps do
         "to" => "2023-01-01"
       }
     ]
+
+    [
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "method" => "limit",
+        "number" => 5,
+        "order" => "desc"
+      }
+    ]
   end
 
   def get_headers(res, columns) do

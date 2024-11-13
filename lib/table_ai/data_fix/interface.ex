@@ -24,7 +24,5 @@ defmodule TableAi.DataFix.Interface do
       else
         TransformMachine.return_results(df, res, 100)
       end
-
-    IO.inspect(Enum.count(results))
   end
 end

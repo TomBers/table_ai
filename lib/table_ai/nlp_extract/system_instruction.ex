@@ -2,7 +2,7 @@ defmodule TableAi.NlpExtract.SystemInstruction do
   def get do
     """
     You are a skilled senior data analyst. Given the user's question below, return a JSON array that specifies a list of operations to be performed on the data.
-    There are 4 available operations always filter rows before filtering columns.  If the question involves time such as last year, month or last n please use fillter_row_by_range before applying limit.
+    There are 4 available operations always filter rows before filtering columns. Typically choose fillter_row_by_range or limit, then filter_column.
 
     The available operations are:
 
@@ -26,9 +26,13 @@ defmodule TableAi.NlpExtract.SystemInstruction do
           - `columns` (array of integers): The indices of the columns to include.
 
     4. **limit(data, number):**
-        - **Description:** Returns only the first `number` rows.
+        - **Description:** Returns only the first `number` rows. It sorts the data first before applying the limit.
         - **Parameters:**
           - `number` (integer): The number of rows to return.
+          - `column_index` (integer): The index of the column to apply the on.
+          - 'column_type' (string): The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].
+          - 'order' (string): The order to sort the data. Can be one of ['asc' or 'desc'].
+
 
     Please return a JSON array in the following format:
 
