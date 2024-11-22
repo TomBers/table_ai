@@ -1,5 +1,5 @@
 defmodule TableAi.NlpExtract.TransformMachine do
-  def return_results(df, res, take \\ 5) do
+  def return_results(res, df, take \\ 5) do
     run_filters(res, df) |> Enum.take(take) |> Enum.map(&Enum.to_list(&1))
   end
 

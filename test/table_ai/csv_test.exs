@@ -1,50 +1,108 @@
-defmodule TableAi.NlpExtract.TransformSteps do
-  alias OpenaiEx.Chat
-  alias OpenaiEx.ChatMessage
+defmodule CSVTest do
+  use ExUnit.Case
 
-  def example_steps do
-    # Can I get name and email from the last 5 customers from Europe
+  alias TableAi.NlpExtract.{DataLoader, TransformMachine}
+
+  @limit 100
+  # Testing various transformation engine rules for CSV file
+  def load_csv() do
+    file_path = "test/table_ai/test.csv"
+    DataLoader.file(file_path)
+  end
+
+  test "filter_row" do
+    df = load_csv()
+    steps = filter_row()
+
+    res = TransformMachine.return_results(steps, df, @limit)
+    assert length(res) == 16
+  end
+
+  test "filter_range" do
+    df = load_csv()
+    steps = filter_range()
+
+    res = TransformMachine.return_results(steps, df, @limit)
+    assert length(res) == 62
+  end
+
+  test "filter_column" do
+    df = load_csv()
+    steps = filter_column()
+
+    res = TransformMachine.return_results(steps, df, @limit)
+    assert length(res) == 100
+    assert Enum.at(res, 0) == ["First Name", "Last Name", "Email"]
+    assert Enum.at(res, 1) |> length() == 3
+  end
+
+  test "limit" do
+    df = load_csv()
+    steps = limit()
+
+    res = TransformMachine.return_results(steps, df, @limit)
+    assert length(res) == 10
+    first = res |> List.first() |> Enum.at(10)
+    last = res |> List.last() |> Enum.at(10)
+    assert Date.after?(Date.from_iso8601!(first), Date.from_iso8601!(last))
+  end
+
+  test "multiple_steps" do
+    df = load_csv()
+    steps = limit()
+
+    res = TransformMachine.return_results(steps, df, @limit)
+    assert length(res) == 10
+  end
+
+  def filter_row do
     [
       %{
         "filters" => [
           "United Kingdom",
-          "Germany",
           "France",
+          "Germany",
           "Italy",
           "Spain",
           "Netherlands",
-          "Greece",
-          "Sweden",
-          "Poland",
           "Belgium",
-          "Finland",
+          "Sweden",
           "Denmark",
           "Ireland",
           "Portugal",
+          "Finland",
+          "Poland",
           "Austria",
+          "Switzerland",
+          "Norway",
+          "Greece",
           "Hungary",
           "Czech Republic",
           "Romania",
-          "Bulgaria",
+          "Luxembourg",
           "Slovakia",
+          "Bulgaria",
           "Croatia",
-          "Estonia",
           "Slovenia",
+          "Estonia",
           "Latvia",
           "Lithuania",
-          "Luxembourg",
+          "Cyprus",
           "Malta",
-          "Cyprus"
+          "Iceland",
+          "Liechtenstein",
+          "Monaco",
+          "San Marino",
+          "Andorra",
+          "Vatican City"
         ],
         "method" => "filter_row",
         "row_index" => 6
-      },
-      %{"method" => "limit", "number" => 5},
-      %{"columns" => [2, 3, 9], "method" => "filter_column"}
+      }
     ]
+  end
 
-    # "Can you get me all the info for customers who joined between 2021 and 2023"
-
+  def filter_range do
     [
       %{
         "column_index" => 10,
@@ -54,18 +112,30 @@ defmodule TableAi.NlpExtract.TransformSteps do
         "to" => "2023-01-01"
       }
     ]
+  end
 
-    # Get Last 5 customers who signed up
+  def filter_column do
+    [
+      %{
+        "columns" => [2, 3, 9],
+        "method" => "filter_column"
+      }
+    ]
+  end
+
+  def limit do
     [
       %{
         "column_index" => 10,
         "column_type" => "date",
         "method" => "limit",
-        "number" => 5,
+        "number" => 10,
         "order" => "desc"
       }
     ]
+  end
 
+  def multiple_steps do
     # Can you get me company and email of the last 10 people to signup from Europe?
     [
       %{
@@ -119,56 +189,5 @@ defmodule TableAi.NlpExtract.TransformSteps do
       },
       %{"columns" => [0, 4, 9, 10, 11], "method" => "filter_column"}
     ]
-  end
-
-  def get_headers(res, columns) do
-    cols =
-      res
-      |> Enum.find(fn x -> x["method"] == "filter_column" end)
-
-    case cols do
-      nil ->
-        columns
-
-      _ ->
-        cols
-        |> Map.get("columns")
-        |> Enum.map(fn x -> Enum.at(columns, x) end)
-    end
-  end
-
-  def get(prompt, transform_instructions) do
-    apikey = System.fetch_env!("OPENAI_API_KEY")
-    llm = OpenaiEx.new(apikey) |> OpenaiEx.with_receive_timeout(45_000)
-
-    chat_req =
-      Chat.Completions.new(
-        # model: "chatgpt-4o-latest",
-        model: "gpt-4o-2024-08-06",
-        messages: [
-          ChatMessage.system(transform_instructions),
-          ChatMessage.user(prompt)
-        ]
-      )
-
-    chat_response = llm |> Chat.Completions.create(chat_req)
-
-    case chat_response do
-      {:ok, chat_response} ->
-        IO.inspect(chat_response)
-        get_response(chat_response)
-
-      {:error, error} ->
-        error
-    end
-  end
-
-  defp get_response(chat_response) do
-    chat_response["choices"]
-    |> hd()
-    |> get_in(["message", "content"])
-    |> String.replace_prefix("```json", "")
-    |> String.replace_suffix("```", "")
-    |> Jason.decode()
   end
 end
