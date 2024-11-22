@@ -1,6 +1,10 @@
 defmodule CSVTest do
   use ExUnit.Case
 
+  # TODO - the Limit function removes the first row, which is the header.
+  # Think about making it more consistent with the other functions.
+  # Either extract headers before all functions or after all functions.
+
   alias TableAi.NlpExtract.{DataLoader, TransformMachine}
 
   @limit 100
@@ -49,10 +53,17 @@ defmodule CSVTest do
 
   test "multiple_steps" do
     df = load_csv()
-    steps = limit()
+    steps = multiple_steps()
 
-    res = TransformMachine.return_results(steps, df, @limit)
+    res =
+      TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Multiple Steps")
+
     assert length(res) == 10
+    assert Enum.at(res, 0) |> length == 5
+
+    first = res |> List.first() |> Enum.at(3)
+    last = res |> List.last() |> Enum.at(3)
+    assert Date.after?(Date.from_iso8601!(first), Date.from_iso8601!(last))
   end
 
   def filter_row do
