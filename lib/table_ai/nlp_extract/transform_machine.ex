@@ -157,7 +157,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   def type_errors(data, column_index, type, conv_fn) do
     data
     |> Stream.with_index()
-    |> Stream.filter(fn {row, row_index} ->
+    |> Stream.filter(fn {row, _row_index} ->
       case Enum.at(row, column_index) |> conv_fn.() do
         {:error, _} ->
           true

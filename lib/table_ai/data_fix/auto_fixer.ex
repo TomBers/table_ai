@@ -1,8 +1,8 @@
 defmodule TableAi.DataFix.AutoFixer do
   def run_fixer(errors) do
     # Construct Prompt from the error data
-    prompt = "The errors :" <> Jason.encode!(errors)
-    instructions = TableAi.DataFix.SystemInstructions.fix_errors()
+    _prompt = "The errors :" <> Jason.encode!(errors)
+    _instructions = TableAi.DataFix.SystemInstructions.fix_errors()
 
     # Send the prompt to the LLM
     # {:ok, fixed_errors} = TableAi.NlpExtract.TransformSteps.get(prompt, instructions)

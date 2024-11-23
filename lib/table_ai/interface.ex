@@ -1,7 +1,7 @@
 defmodule TableAi.Interface do
-  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
+  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader}
 
-  def gen_rows(file_path, query, pid) do
+  def gen_rows(file_path, _query, pid) do
     df = DataLoader.file(file_path)
 
     columns = Enum.take(df, 1) |> Enum.at(0)

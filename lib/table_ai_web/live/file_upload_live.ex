@@ -1,7 +1,7 @@
 defmodule TableAiWeb.FileUploadLive do
   use TableAiWeb, :live_view
 
-  def mount(params, session, socket) do
+  def mount(_params, _session, socket) do
     {:ok,
      socket
      |> assign(:uploaded_files, [])
@@ -24,7 +24,7 @@ defmodule TableAiWeb.FileUploadLive do
       end)
 
     path = hd(uploaded_files)
-    {:noreply, socket |> push_redirect(to: "/talk" <> path)}
+    {:noreply, socket |> push_navigate(to: "/talk" <> path)}
     # {:noreply, update(socket, :uploaded_files, &(&1 ++ uploaded_files))}
   end
 end

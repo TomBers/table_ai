@@ -16,13 +16,12 @@ defmodule TableAi.DataFix.Interface do
       TransformMachine.get_errors(df, range_filter["column_index"], range_filter["column_type"])
       |> Enum.to_list()
 
-    results =
-      if Enum.count(errors) > 0 do
-        AutoFixer.run_fixer(errors)
-        |> TransformMachine.fix_errors(df)
-        |> TransformMachine.return_results(res, 100)
-      else
-        TransformMachine.return_results(df, res, 100)
-      end
+    if Enum.count(errors) > 0 do
+      AutoFixer.run_fixer(errors)
+      |> TransformMachine.fix_errors(df)
+      |> TransformMachine.return_results(res, 100)
+    else
+      TransformMachine.return_results(df, res, 100)
+    end
   end
 end

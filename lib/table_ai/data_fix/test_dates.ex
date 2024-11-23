@@ -1,8 +1,7 @@
 defmodule TableAi.DataFix.TestDates do
   def run do
-    prompt = "These are the dates: #{dates() |> Enum.join(", ")}."
-    instructions = TableAi.DataFix.SystemInstructions.fix_dates()
-
+    _prompt = "These are the dates: #{dates() |> Enum.join(", ")}."
+    _instructions = TableAi.DataFix.SystemInstructions.fix_dates()
 
     # TableAi.NlpExtract.TransformSteps.get(prompt, instructions)
   end
@@ -28,5 +27,4 @@ defmodule TableAi.DataFix.TestDates do
       "2020-02-25"
     ]
   end
-
 end
