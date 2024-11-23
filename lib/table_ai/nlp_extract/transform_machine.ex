@@ -36,8 +36,8 @@ defmodule TableAi.NlpExtract.TransformMachine do
                 acc |> filter_by_date(res["column_index"], from_date, to_date)
 
               "timestamp" ->
-                from_dt = DateTime.from_iso8601(res["from"])
-                to_dt = DateTime.from_iso8601(res["to"])
+                {:ok, from_dt, _} = DateTime.from_iso8601(res["from"])
+                {:ok, to_dt, _} = DateTime.from_iso8601(res["to"])
                 acc |> filter_by_timestamp(res["column_index"], from_dt, to_dt)
 
               "int" ->
