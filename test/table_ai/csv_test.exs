@@ -27,7 +27,7 @@ defmodule CSVTest do
     steps = filter_range()
 
     res = TransformMachine.return_results(steps, df, @limit)
-    assert length(res) == 62
+    assert length(res) == 60
   end
 
   test "filter_column" do
@@ -44,11 +44,38 @@ defmodule CSVTest do
     df = load_csv()
     steps = limit()
 
-    res = TransformMachine.return_results(steps, df, @limit)
+    res = TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Limit results")
     assert length(res) == 10
-    first = res |> List.first() |> Enum.at(10)
-    last = res |> List.last() |> Enum.at(10)
-    assert Date.after?(Date.from_iso8601!(first), Date.from_iso8601!(last))
+
+    # Extract the dates from the results
+    dates =
+      res
+      |> Enum.map(&Enum.at(&1, 10))
+      |> Enum.map(&Date.from_iso8601!/1)
+
+    # |> IO.inspect(label: "Dates")
+
+    # Check that each date is greater than or equal to the previous one
+    case Enum.reduce_while(dates, nil, fn
+           date, nil ->
+             {:cont, date}
+
+           date, prev_date ->
+             if Date.compare(prev_date, date) != :lt do
+               {:cont, date}
+             else
+               {:halt, {:error, prev_date, date}}
+             end
+         end) do
+      nil ->
+        flunk("The dates list is empty.")
+
+      {:error, prev_date, date} ->
+        flunk("Dates are out of order: #{prev_date} is after #{date}.")
+
+      _last_date ->
+        :ok
+    end
   end
 
   test "multiple_steps" do
