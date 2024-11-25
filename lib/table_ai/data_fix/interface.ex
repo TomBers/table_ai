@@ -10,7 +10,10 @@ defmodule TableAi.DataFix.Interface do
     res = TransformSteps.example_steps()
 
     # TODO - there might be multiple range filters, so we need to handle that
-    range_filter = Enum.find(res, fn step -> step["method"] == "fillter_row_by_range" end)
+    range_filter =
+      Enum.find(res, fn step ->
+        step["method"] == "fillter_row_by_range" || step["method"] == "limit"
+      end)
 
     errors =
       TransformMachine.get_errors(df, range_filter["column_index"], range_filter["column_type"])
