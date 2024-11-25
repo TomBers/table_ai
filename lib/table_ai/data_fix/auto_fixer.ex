@@ -15,4 +15,9 @@ defmodule TableAi.DataFix.AutoFixer do
       %{"column_index" => 10, "fixed_data" => "2022-01-17", "row_index" => 14}
     ]
   end
+
+  def test_fixer(_errors) do
+    "[\n  {\n    \"fixed_data\": \"2022-03-25\",\n    \"row_index\": 3,\n    \"column_index\": 10\n  },\n  {\n    \"fixed_data\": \"2022-01-17\",\n    \"row_index\": 10,\n    \"column_index\": 10\n  }\n]"
+    |> Jason.decode!()
+  end
 end

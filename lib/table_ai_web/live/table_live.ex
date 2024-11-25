@@ -13,29 +13,45 @@ defmodule TableAiWeb.TableLive do
           Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(path))
       end
 
+    nlp_query = %TableAi.Structs.NLPQuery{}
+
     {:ok,
      socket
      |> assign(
        form: %{},
        path: path,
-       headers: ["Headers"],
        rows: [],
+       nlp_query: nlp_query,
        query_id: UUID.generate()
      )}
   end
 
   def handle_event("save", %{"query" => query}, socket) do
     pid = self()
-    {headers, _rows} = TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
-    IO.inspect(headers, label: "HEADERS")
+
+    nlp_query =
+      TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
+      |> IO.inspect(label: "NLP Query")
 
     {:noreply,
      socket
-     |> assign(query_id: UUID.generate(), headers: headers)}
+     |> assign(query_id: UUID.generate(), nlp_query: nlp_query)}
   end
 
   def handle_event("edit", _params, socket) do
     {:noreply, socket |> assign(rows: [])}
+  end
+
+  def handle_event("skip", _params, socket) do
+    pid = self()
+    TableAi.Interface.emit_results(socket.assigns.nlp_query, pid)
+    {:noreply, socket}
+  end
+
+  def handle_event("autofix", _params, socket) do
+    pid = self()
+    TableAi.Interface.fix_errors(socket.assigns.nlp_query, pid)
+    {:noreply, socket}
   end
 
   def handle_info({:rows, rows}, socket) do

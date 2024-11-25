@@ -4,7 +4,17 @@
 <br />
 <br />
 
-<%= @headers |> Enum.join(", ") %>
+<%= if length(@nlp_query.errors) > 0 do %>
+  <p>
+    There are <%= length(@nlp_query.errors) %> errors in the data, you can either skip rows or autofix them.
+  </p>
+  <br />
+  <.button phx-click="skip" phx-value="skip" class="btn btn-primary">Skip</.button>
+  <.button phx-click="autofix" phx-value="autofix" class="btn btn-primary">Autofix</.button>
+  <br />
+<% end %>
+
+<%= @nlp_query.headers |> Enum.join(", ") %>
 <.table id="rows" rows={@rows}>
   <:col :let={row} label={row_string(@rows)}><%= row %></:col>
 </.table>

@@ -3,8 +3,8 @@ defmodule TableAi.NlpExtract.TransformMachine do
     run_filters(res, df) |> Enum.take(take) |> Enum.map(&Enum.to_list(&1))
   end
 
-  def emit_results(res, df, pid) do
-    run_filters(res, df)
+  def emit_results(query, pid) do
+    run_filters(query.steps, query.df)
     |> Stream.chunk_every(500)
     |> Stream.each(fn rows ->
       formatted_rows =
