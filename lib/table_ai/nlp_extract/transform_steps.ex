@@ -128,7 +128,7 @@ defmodule TableAi.NlpExtract.TransformSteps do
 
     case cols do
       nil ->
-        columns
+        columns |> String.split(",")
 
       _ ->
         cols
