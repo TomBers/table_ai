@@ -46,13 +46,14 @@ defmodule TableAiWeb.TableLive do
   def handle_event("skip", _params, socket) do
     pid = self()
     TableAi.Interface.emit_results(socket.assigns.nlp_query, pid)
-    {:noreply, socket}
+    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
   end
 
   def handle_event("autofix", _params, socket) do
     pid = self()
     TableAi.Interface.fix_errors(socket.assigns.nlp_query, pid)
-    {:noreply, socket}
+
+    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
   end
 
   def handle_info({:rows, rows}, socket) do
