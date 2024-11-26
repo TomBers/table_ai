@@ -10,14 +10,15 @@ defmodule TableAi.Interface do
     df = DataLoader.file(file_path)
 
     columns = Enum.take(df, 1) |> Enum.at(0)
-    first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
+    # First row seems to make the results worse
+    # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
 
     res =
       if @use_test_data do
         TransformSteps.example_steps()
       else
         prompt =
-          "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}. Example Data: [#{first_row}]"
+          "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
 
         IO.inspect(prompt, label: "Prompt")
         instructions = SystemInstruction.get()
