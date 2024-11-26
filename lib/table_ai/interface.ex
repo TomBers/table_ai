@@ -2,6 +2,7 @@ defmodule TableAi.Interface do
   alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
   alias TableAi.Structs.NLPQuery
   alias TableAi.DataFix.AutoFixer
+  alias TableAi.LlmInterface
 
   @use_test_data Application.compile_env(:table_ai, :use_test_data)
 
@@ -20,7 +21,7 @@ defmodule TableAi.Interface do
 
         IO.inspect(prompt, label: "Prompt")
         instructions = SystemInstruction.get()
-        {:ok, steps} = TransformSteps.get(prompt, instructions)
+        {:ok, steps} = LlmInterface.get(prompt, instructions)
         steps
       end
 
