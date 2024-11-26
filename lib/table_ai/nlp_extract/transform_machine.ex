@@ -57,12 +57,9 @@ defmodule TableAi.NlpExtract.TransformMachine do
             # Assume first row is the header
             limit = res["number"] + 1
 
-            [_h | t] =
-              acc
-              |> order_by_column(res["column_index"], res["column_type"], res["order"])
-              |> Enum.take(limit)
-
-            t
+            acc
+            |> order_by_column(res["column_index"], res["column_type"], res["order"])
+            |> Enum.take(limit)
         end
     end)
   end

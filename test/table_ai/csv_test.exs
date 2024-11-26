@@ -45,11 +45,12 @@ defmodule CSVTest do
     steps = limit()
 
     res = TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Limit results")
-    assert length(res) == 10
-
+    # Result includes headers - so 10 results and header
+    assert length(res) == 11
+    [_ | data] = res
     # Extract the dates from the results
     dates =
-      res
+      data
       |> Enum.map(&Enum.at(&1, 10))
       |> Enum.map(&Date.from_iso8601!/1)
 
@@ -85,7 +86,7 @@ defmodule CSVTest do
     res =
       TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Multiple Steps")
 
-    assert length(res) == 10
+    assert length(res) == 11
     assert Enum.at(res, 0) |> length == 5
 
     first = res |> List.first() |> Enum.at(3)

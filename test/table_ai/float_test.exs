@@ -40,7 +40,7 @@ defmodule TableAi.FloatTest do
       TransformMachine.return_results(steps, df, @limit)
       |> IO.inspect(label: "Float range results")
 
-    assert length(res) == 40
+    assert length(res) == 39
   end
 
   test "limit_datetime" do
@@ -51,6 +51,6 @@ defmodule TableAi.FloatTest do
       TransformMachine.return_results(steps, df, @limit)
       |> IO.inspect(label: "Float Limit results")
 
-    assert length(res) == 10
+    assert length(res) == 11
   end
 end

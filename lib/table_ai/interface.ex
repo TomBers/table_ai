@@ -49,19 +49,23 @@ defmodule TableAi.Interface do
   def fix_errors(query, pid) do
     fixes =
       if @use_test_data do
-        AutoFixer.test_fixer(query.errors)
+        AutoFixer.example_fixer(query.errors)
       else
         AutoFixer.run_fixer(query.errors)
       end
 
+    IO.inspect(fixes, label: "Fixes")
+
     # AutoFixer.run_fixer(query.errors)
-    fixed_df =
+    [_ | fixed_df] =
       fixes
       |> TransformMachine.fix_errors(query.df)
-      |> IO.inspect(label: "Fixed DF")
 
-    %{query | df: fixed_df, errors: []}
-    |> TransformMachine.emit_results(pid)
+    # |> IO.inspect(label: "Fixed DF")
+
+    updated_query = %{query | df: fixed_df, errors: []}
+    IO.inspect(updated_query, label: "UPDATED QUERY")
+    TransformMachine.emit_results(updated_query, pid)
   end
 
   def get_errors(res, df) do

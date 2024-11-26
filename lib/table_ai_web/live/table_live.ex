@@ -4,14 +4,8 @@ defmodule TableAiWeb.TableLive do
   import TableAiWeb.CoreComponents
 
   def mount(params, _session, socket) do
-    path =
-      case Map.get(params, "path") do
-        nil ->
-          "customers-2000000.csv"
-
-        path ->
-          Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(path))
-      end
+    p = Map.get(params, "path", "customers-2000000.csv")
+    path = Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(p))
 
     nlp_query = %TableAi.Structs.NLPQuery{}
 

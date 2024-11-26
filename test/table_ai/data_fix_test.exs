@@ -4,7 +4,7 @@ defmodule DataFixTest do
   alias TableAi.NlpExtract.{DataLoader, TransformMachine}
   alias TableAi.DataFix.AutoFixer
 
-  @limit 100
+  # @limit 100
   # Testing various transformation engine rules for CSV file
   def load_csv() do
     file_path = "test/table_ai/test_errors.csv"

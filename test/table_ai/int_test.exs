@@ -51,6 +51,6 @@ defmodule TableAi.IntTest do
       TransformMachine.return_results(steps, df, @limit)
       |> IO.inspect(label: "int Limit results")
 
-    assert length(res) == 10
+    assert length(res) == 11
   end
 end
