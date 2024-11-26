@@ -141,10 +141,13 @@ defmodule TableAi.NlpExtract.TransformSteps do
     apikey = System.fetch_env!("OPENAI_API_KEY")
     llm = OpenaiEx.new(apikey) |> OpenaiEx.with_receive_timeout(45_000)
 
+    # model = "gpt-4o-mini-2024-07-18"
+    model = "gpt-4o-2024-08-06"
+    # model: "chatgpt-4o-latest",
+
     chat_req =
       Chat.Completions.new(
-        # model: "chatgpt-4o-latest",
-        model: "gpt-4o-2024-08-06",
+        model: model,
         messages: [
           ChatMessage.system(transform_instructions),
           ChatMessage.user(prompt)
