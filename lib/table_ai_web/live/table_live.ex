@@ -20,6 +20,7 @@ defmodule TableAiWeb.TableLive do
      |> assign(
        form: %{},
        path: path,
+       file_name: Map.get(params, "path"),
        rows: [],
        nlp_query: nlp_query,
        query_id: UUID.generate()

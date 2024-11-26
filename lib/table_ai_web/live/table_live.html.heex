@@ -1,6 +1,7 @@
 <.simple_form for={@form} phx-submit="save" phx-change="edit">
   <.input name="query" value="" id={@query_id} label="Enter your question" />
 </.simple_form>
+<.link href={~p"/file/#{@file_name}"}>View File</.link>
 <br />
 <br />
 
@@ -12,6 +13,9 @@
   <.button phx-click="skip" phx-value="skip" class="btn btn-primary">Skip</.button>
   <.button phx-click="autofix" phx-value="autofix" class="btn btn-primary">Autofix</.button>
   <br />
+<% end %>
+<%= if length(@rows) > 0 do %>
+  <p>There are <%= length(@rows) %> results for the query.</p>
 <% end %>
 
 <.dynamic_table id="rows" rows={@rows} cols={@nlp_query.headers}></.dynamic_table>
