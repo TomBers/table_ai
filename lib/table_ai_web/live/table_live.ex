@@ -56,6 +56,7 @@ defmodule TableAiWeb.TableLive do
 
   def handle_info({:rows, rows}, socket) do
     IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
+    IO.inspect(rows, label: "ROWS")
     {:noreply, socket |> assign(rows: socket.assigns.rows ++ rows)}
   end
 

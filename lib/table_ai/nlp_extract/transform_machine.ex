@@ -11,7 +11,6 @@ defmodule TableAi.NlpExtract.TransformMachine do
         Enum.map(rows, fn row ->
           row
           |> Enum.to_list()
-          |> Enum.join(", ")
         end)
 
       send(pid, {:rows, formatted_rows})

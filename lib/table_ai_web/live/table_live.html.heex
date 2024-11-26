@@ -14,7 +14,4 @@
   <br />
 <% end %>
 
-<%= @nlp_query.headers |> Enum.join(", ") %>
-<.table id="rows" rows={@rows}>
-  <:col :let={row} label={row_string(@rows)}><%= row %></:col>
-</.table>
+<.dynamic_table id="rows" rows={@rows} cols={@nlp_query.headers}></.dynamic_table>
