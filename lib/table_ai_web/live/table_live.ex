@@ -27,6 +27,7 @@ defmodule TableAiWeb.TableLive do
   end
 
   def handle_event("save", %{"query" => query}, socket) do
+    IO.inspect(query, label: "User Query")
     pid = self()
 
     nlp_query =

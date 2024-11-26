@@ -22,6 +22,8 @@ config :table_ai, TableAiWeb.Endpoint,
   pubsub_server: TableAi.PubSub,
   live_view: [signing_salt: "VHLkeIrx"]
 
+config :table_ai, use_test_data: true
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

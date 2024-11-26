@@ -1,22 +1,27 @@
 defmodule TableAi.Interface do
-  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader}
+  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
   alias TableAi.Structs.NLPQuery
   alias TableAi.DataFix.AutoFixer
 
-  def gen_rows(file_path, _query, pid) do
+  @use_test_data Application.compile_env(:table_ai, :use_test_data)
+
+  def gen_rows(file_path, query, pid) do
     df = DataLoader.file(file_path)
 
     columns = Enum.take(df, 1) |> Enum.at(0)
-    # ------------
-    # prompt =
-    #   "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
+    first_row = Enum.take(df, 2) |> Enum.at(1)
 
-    # instructions = SystemInstruction.get()
-    # {:ok, res} = TransformSteps.get(prompt, instructions)
-    # ------------
+    res =
+      if @use_test_data do
+        TransformSteps.example_steps()
+      else
+        prompt =
+          "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}. Example Data: [#{first_row}]"
 
-    # FOR testing
-    res = TransformSteps.example_steps()
+        instructions = SystemInstruction.get()
+        {:ok, steps} = TransformSteps.get(prompt, instructions)
+        steps
+      end
 
     errors = get_errors(res, df)
 
@@ -40,9 +45,16 @@ defmodule TableAi.Interface do
   end
 
   def fix_errors(query, pid) do
+    fixes =
+      if @use_test_data do
+        AutoFixer.test_fixer(query.errors)
+      else
+        AutoFixer.run_fixer(query.errors)
+      end
+
     # AutoFixer.run_fixer(query.errors)
     fixed_df =
-      AutoFixer.test_fixer(query.errors)
+      fixes
       |> TransformMachine.fix_errors(query.df)
       |> IO.inspect(label: "Fixed DF")
 
