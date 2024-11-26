@@ -32,7 +32,7 @@ defmodule TableAi.IntTest do
     ]
   end
 
-  test "filter_datetime_range" do
+  test "filter_int_range" do
     df = load_csv()
     steps = filter_int_range()
 
@@ -43,7 +43,7 @@ defmodule TableAi.IntTest do
     assert length(res) == 34
   end
 
-  test "limit_datetime" do
+  test "limit_int" do
     df = load_csv()
     steps = limit_int()
 
@@ -51,6 +51,6 @@ defmodule TableAi.IntTest do
       TransformMachine.return_results(steps, df, @limit)
       |> IO.inspect(label: "int Limit results")
 
-    assert length(res) == 11
+    assert length(res) == 10
   end
 end

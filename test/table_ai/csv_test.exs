@@ -11,7 +11,7 @@ defmodule CSVTest do
   # Testing various transformation engine rules for CSV file
   def load_csv() do
     file_path = "test/table_ai/test.csv"
-    DataLoader.file(file_path)
+    DataLoader.file(file_path, @limit)
   end
 
   test "filter_row" do
@@ -45,8 +45,8 @@ defmodule CSVTest do
     steps = limit()
 
     res = TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Limit results")
-    # Result includes headers - so 10 results and header
-    assert length(res) == 11
+
+    assert length(res) == 10
     [_ | data] = res
     # Extract the dates from the results
     dates =
@@ -86,7 +86,7 @@ defmodule CSVTest do
     res =
       TransformMachine.return_results(steps, df, @limit) |> IO.inspect(label: "Multiple Steps")
 
-    assert length(res) == 11
+    assert length(res) == 10
     assert Enum.at(res, 0) |> length == 5
 
     first = res |> List.first() |> Enum.at(3)

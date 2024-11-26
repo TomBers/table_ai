@@ -55,7 +55,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
 
           %{"method" => "limit"} ->
             # Assume first row is the header
-            limit = res["number"] + 1
+            limit = res["number"]
 
             acc
             |> order_by_column(res["column_index"], res["column_type"], res["order"])
