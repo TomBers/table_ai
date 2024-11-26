@@ -33,7 +33,6 @@ defmodule TableAiWeb.TableLive do
 
     nlp_query =
       TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
-      |> IO.inspect(label: "NLP Query")
 
     {:noreply,
      socket
