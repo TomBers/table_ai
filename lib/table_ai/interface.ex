@@ -13,14 +13,15 @@ defmodule TableAi.Interface do
     # First row seems to make the results worse
     # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
 
+    prompt =
+      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
+
+    IO.inspect(prompt, label: "Prompt")
+
     res =
       if @use_test_data do
         TransformSteps.example_steps()
       else
-        prompt =
-          "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
-
-        IO.inspect(prompt, label: "Prompt")
         instructions = SystemInstruction.get()
         {:ok, steps} = LlmInterface.get(prompt, instructions)
         steps

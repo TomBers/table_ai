@@ -1,4 +1,25 @@
 defmodule TableAi.NlpExtract.PastSteps do
+  def imdb do
+    "Can you get me films between 1900 and 1910 with rating higher than 4."
+
+    [
+      %{
+        "column_index" => 6,
+        "column_type" => "int",
+        "from" => 1900,
+        "method" => "fillter_row_by_range",
+        "to" => 1910
+      },
+      %{
+        "column_index" => 4,
+        "column_type" => "float",
+        "from" => 4,
+        "method" => "fillter_row_by_range",
+        "to" => nil
+      }
+    ]
+  end
+
   def email_name_europe do
     # Can I get name and email from the last 5 customers from Europe
     [

@@ -1,6 +1,7 @@
 defmodule TableAi.NlpExtract.TransformSteps do
   def example_steps do
-    TableAi.NlpExtract.PastSteps.limit()
+    # TableAi.NlpExtract.PastSteps.limit()
+    TableAi.NlpExtract.PastSteps.imdb()
     # TableAi.NlpExtract.PastSteps.date_range()
   end
 
