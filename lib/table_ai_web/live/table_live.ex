@@ -4,8 +4,10 @@ defmodule TableAiWeb.TableLive do
   import TableAiWeb.CoreComponents
 
   def mount(params, _session, socket) do
-    p = Map.get(params, "path", "customers-2000000.csv")
-    path = Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(p))
+    file_name = Map.get(params, "path", "customers-2000000.csv")
+
+    path =
+      Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(file_name))
 
     nlp_query = %TableAi.Structs.NLPQuery{}
 
@@ -14,7 +16,7 @@ defmodule TableAiWeb.TableLive do
      |> assign(
        form: %{},
        path: path,
-       file_name: Map.get(params, "path", "customers-2000000.csv"),
+       file_name: file_name,
        rows: [],
        nlp_query: nlp_query,
        query_id: UUID.generate()
@@ -26,7 +28,7 @@ defmodule TableAiWeb.TableLive do
     pid = self()
 
     nlp_query =
-      TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
+      TableAi.Interface.gen_rows(socket.assigns.path, query, pid, socket.assigns.file_name)
 
     {:noreply,
      socket
@@ -51,8 +53,7 @@ defmodule TableAiWeb.TableLive do
   end
 
   def handle_info({:rows, rows}, socket) do
-    IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
-    IO.inspect(rows, label: "ROWS")
+    # IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
     {:noreply, socket |> assign(rows: socket.assigns.rows ++ rows)}
   end
 

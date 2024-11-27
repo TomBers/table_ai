@@ -6,7 +6,8 @@ defmodule TableAi.Interface do
 
   @use_test_data Application.compile_env(:table_ai, :use_test_data)
 
-  def gen_rows(file_path, query, pid) do
+  def gen_rows(file_path, query, pid, file_name \\ nil) do
+    # imdb_length = 1_031_289
     df = DataLoader.file(file_path)
 
     columns = Enum.take(df, 1) |> Enum.at(0)
@@ -14,13 +15,13 @@ defmodule TableAi.Interface do
     # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
 
     prompt =
-      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question #{query}."
+      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question ```#{query}```."
 
-    IO.inspect(prompt, label: "Prompt")
+    # IO.inspect(prompt, label: "Prompt")
 
     res =
       if @use_test_data do
-        TransformSteps.example_steps()
+        TransformSteps.example_steps(file_name)
       else
         instructions = SystemInstruction.get()
         {:ok, steps} = LlmInterface.get(prompt, instructions)
