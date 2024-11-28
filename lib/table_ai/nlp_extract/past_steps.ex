@@ -1,6 +1,6 @@
 defmodule TableAi.NlpExtract.PastSteps do
   def imdb do
-    "Can you get me films from the 60s with rating higher than 7 with London in the title."
+    "Can you get me content from the 60s with rating higher than 7 with London in the title"
 
     [
       %{
