@@ -10,7 +10,7 @@ defmodule TableAiWeb.FileLive do
     file_path =
       Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(path))
 
-    df = DataLoader.file(file_path)
+    df = DataLoader.file(file_path, 50_000)
     headers = Enum.take(df, 1) |> Enum.at(0)
     [_ | rows] = df |> Enum.to_list()
 

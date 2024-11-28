@@ -30,9 +30,10 @@ defmodule TableAiWeb.TableLive do
     nlp_query =
       TableAi.Interface.gen_rows(socket.assigns.path, query, pid, socket.assigns.file_name)
 
+    # query_id: UUID.generate()
     {:noreply,
      socket
-     |> assign(query_id: UUID.generate(), nlp_query: nlp_query)}
+     |> assign(nlp_query: nlp_query)}
   end
 
   def handle_event("edit", _params, socket) do

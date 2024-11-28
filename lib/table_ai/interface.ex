@@ -7,8 +7,9 @@ defmodule TableAi.Interface do
   @use_test_data Application.compile_env(:table_ai, :use_test_data)
 
   def gen_rows(file_path, query, pid, file_name \\ nil) do
-    # imdb_length = 1_031_289
-    df = DataLoader.file(file_path)
+    # 1_031_289
+    imdb_length = 1_031_289
+    df = DataLoader.file(file_path, imdb_length)
 
     columns = Enum.take(df, 1) |> Enum.at(0)
     # First row seems to make the results worse

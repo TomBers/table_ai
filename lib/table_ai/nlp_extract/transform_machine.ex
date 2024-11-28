@@ -119,15 +119,39 @@ defmodule TableAi.NlpExtract.TransformMachine do
     )
   end
 
-  def order_by_column(data, column_index, column_type, order) do
+  def order_by_column(data, column_index, ~c"int") do
+    IO.inspect("Order by Int")
+
     data
     |> Enum.sort_by(
       fn row ->
-        case column_type do
-          "int" -> Integer.parse(Enum.at(row, column_index))
-          "float" -> Float.parse(Enum.at(row, column_index))
-          _ -> Enum.at(row, column_index)
-        end
+        {val, _} = Integer.parse(Enum.at(row, column_index))
+        val
+      end,
+      # Use the Kernel comparison operator
+      &Kernel.>=/2
+    )
+  end
+
+  def order_by_column(data, column_index, ~c"float") do
+    IO.inspect("Order by Float")
+
+    data
+    |> Enum.sort_by(
+      fn row ->
+        Float.parse(Enum.at(row, column_index))
+      end,
+      &Kernel.>=/2
+    )
+  end
+
+  def order_by_column(data, column_index, column_type, order) do
+    IO.inspect(column_type, label: "Order by Col")
+
+    data
+    |> Enum.sort_by(
+      fn row ->
+        Enum.at(row, column_index)
       end,
       String.to_atom(order)
     )
@@ -183,21 +207,27 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def filter_by_int(data, column_index, from_int, to_int) do
+    IO.inspect("Filter by Int")
+
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> Integer.parse() do
         {int, _} -> int >= from_int and int <= to_int
         _ -> false
       end
     end)
+    |> order_by_column(column_index, ~c"int")
   end
 
   def filter_by_float(data, column_index, from_float, to_float) do
+    IO.inspect("Filter by Float")
+
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> Float.parse() do
         {float, _} -> float >= from_float and float <= to_float
         _ -> false
       end
     end)
+    |> order_by_column(column_index, ~c"float")
   end
 
   def extact_columns(row, columns) do

@@ -1,22 +1,23 @@
 defmodule TableAi.NlpExtract.PastSteps do
   def imdb do
-    "Can you get me films between 1900 and 1910 with rating higher than 4."
+    "Can you get me films from the 60s with rating higher than 7 with London in the title."
 
     [
       %{
         "column_index" => 6,
         "column_type" => "int",
-        "from" => 1900,
+        "from" => 1960,
         "method" => "fillter_row_by_range",
-        "to" => 1910
+        "to" => 1969
       },
       %{
         "column_index" => 4,
         "column_type" => "float",
-        "from" => 4,
+        "from" => 7,
         "method" => "fillter_row_by_range",
         "to" => nil
-      }
+      },
+      %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}
     ]
   end
 
