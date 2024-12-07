@@ -16,9 +16,9 @@ defmodule TableAi.LlmInterface do
         messages: [
           ChatMessage.system(transform_instructions),
           ChatMessage.user(prompt)
-        ]
+        ],
         # TODO - maybe set make tokens for request to prevent cutting off responses
-        # max_tokens: 1500
+        max_tokens: 1500
       )
 
     chat_response = llm |> Chat.Completions.create(chat_req)

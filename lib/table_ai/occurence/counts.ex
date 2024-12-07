@@ -12,68 +12,68 @@ defmodule TableAi.Occurence.Counts do
 
   def get_steps(prompt) do
     # TODO - Check max token parameter in the request
-    # {:ok, steps} = LlmInterface.get(prompt, system_instruction())
-    # steps
+    {:ok, steps} = LlmInterface.get(prompt, system_instruction())
+    steps
     # steps = [%{"data" => "Orange", "method" => "occurence_count", "search_term" => "r"}]
 
-    _steps = [
-      %{
-        "search_list" => [
-          "Alabama",
-          "Alaska",
-          "Arizona",
-          "Arkansas",
-          "California",
-          "Colorado",
-          "Connecticut",
-          "Delaware",
-          "Florida",
-          "Georgia",
-          "Hawaii",
-          "Idaho",
-          "Illinois",
-          "Indiana",
-          "Iowa",
-          "Kansas",
-          "Kentucky",
-          "Louisiana",
-          "Maine",
-          "Maryland",
-          "Massachusetts",
-          "Michigan",
-          "Minnesota",
-          "Mississippi",
-          "Missouri",
-          "Montana",
-          "Nebraska",
-          "Nevada",
-          "New Hampshire",
-          "New Jersey",
-          "New Mexico",
-          "New York",
-          "North Carolina",
-          "North Dakota",
-          "Ohio",
-          "Oklahoma",
-          "Oregon",
-          "Pennsylvania",
-          "Rhode Island",
-          "South Carolina",
-          "South Dakota",
-          "Tennessee",
-          "Texas",
-          "Utah",
-          "Vermont",
-          "Virginia",
-          "Washington",
-          "West Virginia",
-          "Wisconsin",
-          "Wyoming"
-        ],
-        "method" => "group_count",
-        "search_term" => "R"
-      }
-    ]
+    # steps = [
+    #   %{
+    #     "search_list" => [
+    #       "Alabama",
+    #       "Alaska",
+    #       "Arizona",
+    #       "Arkansas",
+    #       "California",
+    #       "Colorado",
+    #       "Connecticut",
+    #       "Delaware",
+    #       "Florida",
+    #       "Georgia",
+    #       "Hawaii",
+    #       "Idaho",
+    #       "Illinois",
+    #       "Indiana",
+    #       "Iowa",
+    #       "Kansas",
+    #       "Kentucky",
+    #       "Louisiana",
+    #       "Maine",
+    #       "Maryland",
+    #       "Massachusetts",
+    #       "Michigan",
+    #       "Minnesota",
+    #       "Mississippi",
+    #       "Missouri",
+    #       "Montana",
+    #       "Nebraska",
+    #       "Nevada",
+    #       "New Hampshire",
+    #       "New Jersey",
+    #       "New Mexico",
+    #       "New York",
+    #       "North Carolina",
+    #       "North Dakota",
+    #       "Ohio",
+    #       "Oklahoma",
+    #       "Oregon",
+    #       "Pennsylvania",
+    #       "Rhode Island",
+    #       "South Carolina",
+    #       "South Dakota",
+    #       "Tennessee",
+    #       "Texas",
+    #       "Utah",
+    #       "Vermont",
+    #       "Virginia",
+    #       "Washington",
+    #       "West Virginia",
+    #       "Wisconsin",
+    #       "Wyoming"
+    #     ],
+    #     "method" => "group_count",
+    #     "search_term" => "R"
+    #   }
+    # ]
   end
 
   def agent_reply(prompt) do
@@ -110,24 +110,25 @@ defmodule TableAi.Occurence.Counts do
 
   defp system_instruction do
     """
-    You are a skilled senior data analyst. Given the user's question below, return a JSON array that specifies a list of operations to be performed on the data.
-    There are 2 available operations that can be performed on the data. Unless the data is explicity stated, assume the data is a list you must create from your own knowledge.
+    You are a skilled senior data analyst. The user will ask a question. If their question explicitly requires counting occurrences of a substring within a piece of data, or filtering a list of data by items containing a substring, then you should return a JSON array specifying the operations to be performed. Otherwise, provide a normal, direct answer to their question.
+
+    There are 2 available operations that can be performed on the data, but you should only use them if necessary to answer the user's request. If the user asks about occurrence counting or grouping based on a search term, return a JSON array describing which operations to perform and the parameters to use. If the question is unrelated to these tasks, simply answer without returning the JSON array.
 
     The available operations are:
 
     1. **group_count(data, search_term):**
-      - **Description:** Given a list of data, returns only the items that contain the `search_term`.
-      - **Parameters:**
-        - `search_list` (array of strings): The list of values to search by, where possible please fill this list completely, it needs to be accurate.
-        - 'search_term' (string): the term the user wants to count occurences of.
+       - **Description:** Given a list of data, returns only the items that contain the `search_term`.
+       - **Parameters:**
+         - `search_list` (array of strings): The list of values to search by. If the user requests data not explicitly provided, reasonably assume or generate a comprehensive list.
+         - `search_term` (string): The term the user wants to find in the data.
 
     2. **occurence_count(data, search_term):**
-       - **Description:** Returns the number of times the `search_term` appears in the search_string.
+       - **Description:** Returns the number of times the `search_term` appears in the `search_string`.
        - **Parameters:**
          - `search_string` (string): The data the user asked about.
-         - `search_term` (string): the term the user wants to count occurences of.
+         - `search_term` (string): The term the user wants to count occurrences of.
 
-    Please return a JSON array in the following format:
+    When the user asks a question that requires one of the above operations, return a JSON array in the following format:
 
     ```json
     [
@@ -142,6 +143,7 @@ defmodule TableAi.Occurence.Counts do
         "search_term": "a"
       }
     ]```
+    If the user’s query does not require these operations, respond normally as an expert data analyst without returning any JSON array.
     """
   end
 end
