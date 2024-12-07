@@ -2,10 +2,13 @@ defmodule TableAiWeb.FileUploadLive do
   use TableAiWeb, :live_view
 
   def mount(_params, _session, socket) do
+    # 100MB
+    max_file_size = 100_000_000
+
     {:ok,
      socket
      |> assign(:uploaded_files, [])
-     |> allow_upload(:avatar, accept: ~w(.csv), max_entries: 1)}
+     |> allow_upload(:avatar, accept: ~w(.csv), max_entries: 1, max_file_size: max_file_size)}
   end
 
   def handle_event("validate", _params, socket) do
@@ -13,6 +16,8 @@ defmodule TableAiWeb.FileUploadLive do
   end
 
   def handle_event("save", _params, socket) do
+    IO.inspect("Saving file")
+
     uploaded_files =
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
         dest =

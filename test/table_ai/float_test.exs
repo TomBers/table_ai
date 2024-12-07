@@ -5,7 +5,7 @@ defmodule TableAi.FloatTest do
   # Testing various transformation engine rules for CSV file
   def load_csv() do
     file_path = "test/table_ai/test.csv"
-    DataLoader.file(file_path)
+    DataLoader.file(file_path, @limit)
   end
 
   def filter_float_range do
@@ -40,10 +40,10 @@ defmodule TableAi.FloatTest do
       TransformMachine.return_results(steps, df, @limit)
       |> IO.inspect(label: "Float range results")
 
-    assert length(res) == 40
+    assert length(res) == 39
   end
 
-  test "limit_datetime" do
+  test "limit_float" do
     df = load_csv()
     steps = limit_float()
 

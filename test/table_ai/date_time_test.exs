@@ -5,7 +5,7 @@ defmodule TableAi.DateTimeTest do
   # Testing various transformation engine rules for CSV file
   def load_csv() do
     file_path = "test/table_ai/test.csv"
-    DataLoader.file(file_path)
+    DataLoader.file(file_path, @limit)
   end
 
   def filter_datetime_range do

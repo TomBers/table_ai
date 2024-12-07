@@ -1,14 +1,6 @@
 defmodule TableAi.NlpExtract.DataLoader do
-  # def file do
-  #   # take = 2_000_000
-  #   take = 5000
-  #   path = "customers-2000000.csv"
-
-  #   file_stream(path, take)
-  # end
-
-  def file(path) do
-    take = 50_000
+  def file(path, take \\ 10_000) do
+    # take = 2_000_000
 
     File.stream!(path, [], :line)
     |> CSV.decode!()

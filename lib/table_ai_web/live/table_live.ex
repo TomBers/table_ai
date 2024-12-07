@@ -4,42 +4,57 @@ defmodule TableAiWeb.TableLive do
   import TableAiWeb.CoreComponents
 
   def mount(params, _session, socket) do
-    path =
-      case Map.get(params, "path") do
-        nil ->
-          "customers-2000000.csv"
+    file_name = Map.get(params, "path", "customers-2000000.csv")
 
-        path ->
-          Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(path))
-      end
+    path =
+      Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(file_name))
+
+    nlp_query = %TableAi.Structs.NLPQuery{}
 
     {:ok,
      socket
      |> assign(
        form: %{},
        path: path,
-       headers: ["Headers"],
+       file_name: file_name,
        rows: [],
+       nlp_query: nlp_query,
        query_id: UUID.generate()
      )}
   end
 
   def handle_event("save", %{"query" => query}, socket) do
+    IO.inspect(query, label: "User Query")
     pid = self()
-    {headers, _rows} = TableAi.Interface.gen_rows(socket.assigns.path, query, pid)
-    IO.inspect(headers, label: "HEADERS")
 
+    nlp_query =
+      TableAi.Interface.gen_rows(socket.assigns.path, query, pid, socket.assigns.file_name)
+
+    # query_id: UUID.generate()
     {:noreply,
      socket
-     |> assign(query_id: UUID.generate(), headers: headers)}
+     |> assign(nlp_query: nlp_query)}
   end
 
   def handle_event("edit", _params, socket) do
     {:noreply, socket |> assign(rows: [])}
   end
 
+  def handle_event("skip", _params, socket) do
+    pid = self()
+    TableAi.Interface.emit_results(socket.assigns.nlp_query, pid)
+    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
+  end
+
+  def handle_event("autofix", _params, socket) do
+    pid = self()
+    TableAi.Interface.fix_errors(socket.assigns.nlp_query, pid)
+
+    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
+  end
+
   def handle_info({:rows, rows}, socket) do
-    IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
+    # IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
     {:noreply, socket |> assign(rows: socket.assigns.rows ++ rows)}
   end
 
