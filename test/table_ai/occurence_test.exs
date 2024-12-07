@@ -13,6 +13,6 @@ defmodule TableAi.OccurenceTest do
   test "group_count" do
     data = ["Orange", "Banana", "Apple"]
     term = "n"
-    assert Counts.group_count(data, term) == "Orange, Banana"
+    assert Counts.group_count(data, term) == "Orange, Banana (2)"
   end
 end

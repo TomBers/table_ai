@@ -80,8 +80,13 @@ defmodule TableAi.Occurence.Counts do
 
   def group_count(data, term) do
     # Insert logic to return only the items that contain the term
-    Enum.filter(data, fn x -> String.contains?(String.downcase(x), String.downcase(term)) end)
-    |> Enum.join(", ")
+    items =
+      Enum.filter(data, fn x -> String.contains?(String.downcase(x), String.downcase(term)) end)
+
+    count = Enum.count(items)
+
+    ans = items |> Enum.join(", ")
+    ans <> " (#{count})"
   end
 
   defp system_instruction do
