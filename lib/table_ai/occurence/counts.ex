@@ -2,12 +2,22 @@ defmodule TableAi.Occurence.Counts do
   alias TableAi.LlmInterface
   # Example questions -  calculate the amount of states that have R in them
   # How many r in the word Orange?
-  def agent_reply(prompt) do
+  def example_questions do
+    [
+      "How many r in the word Orange?",
+      "How many US states have the letter R in them?",
+      "How many capital cities have a P in their name?"
+    ]
+  end
+
+  def get_steps(prompt) do
+    # TODO - Check max token parameter in the request
     # {:ok, steps} = LlmInterface.get(prompt, system_instruction())
+    # steps
     # steps = [%{"data" => "Orange", "method" => "occurence_count", "search_term" => "r"}]
-    steps = [
+
+    _steps = [
       %{
-        "method" => "group_count",
         "search_list" => [
           "Alabama",
           "Alaska",
@@ -53,17 +63,26 @@ defmodule TableAi.Occurence.Counts do
           "Tennessee",
           "Texas",
           "Utah",
-          "Vermont"
+          "Vermont",
+          "Virginia",
+          "Washington",
+          "West Virginia",
+          "Wisconsin",
+          "Wyoming"
         ],
+        "method" => "group_count",
         "search_term" => "R"
       }
     ]
+  end
 
+  def agent_reply(prompt) do
+    steps = get_steps(prompt)
     dat = hd(steps)
 
     case dat do
       %{"method" => "occurence_count"} ->
-        occurence_count(dat["data"], dat["search_term"])
+        occurence_count(dat["search_string"], dat["search_term"])
 
       %{"method" => "group_count"} ->
         group_count(dat["search_list"], dat["search_term"])
@@ -99,13 +118,13 @@ defmodule TableAi.Occurence.Counts do
     1. **group_count(data, search_term):**
       - **Description:** Given a list of data, returns only the items that contain the `search_term`.
       - **Parameters:**
-        - `search_list` (array of strings): The list of values to search by, where possible please fill this list as completely as possible.
+        - `search_list` (array of strings): The list of values to search by, where possible please fill this list completely, it needs to be accurate.
         - 'search_term' (string): the term the user wants to count occurences of.
 
     2. **occurence_count(data, search_term):**
-       - **Description:** Returns the number of times the `search_term` appears in the data.
+       - **Description:** Returns the number of times the `search_term` appears in the search_string.
        - **Parameters:**
-         - `data` (string): The data the user asked about.
+         - `search_string` (string): The data the user asked about.
          - `search_term` (string): the term the user wants to count occurences of.
 
     Please return a JSON array in the following format:
@@ -114,12 +133,12 @@ defmodule TableAi.Occurence.Counts do
     [
       {
         "method": "occurence_count",
-        "data": "Orange",
+        "search_string": "Orange",
         "search_term": "r"
       },
       {
         "method": "group_count",
-        "data": ["Orange", "Banana", "Apple"],
+        "search_list": ["Orange", "Banana", "Apple"],
         "search_term": "a"
       }
     ]```
