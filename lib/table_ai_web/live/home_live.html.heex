@@ -1,12 +1,21 @@
 <h1>Table AI</h1>
 <h1>What?</h1>
-The ability to ask natural language questions of table data and reliably get back accurate results over large datasets.
-Examples such as:
-"Can you get me content from the 60s with rating higher than 7 with London in the title"
+A proof of concept of using a large language model (LLM) to generate a bespoke "transformation machine" that uses an LLM to generate a series
+of "transform steps" to turn natural language into computation.
+
+What follows is a description of a concrete example and implementation, I will return the the more general question later on.
+
+Specific Example:
+What I want is ability to ask natural language questions of tablular data and reliably get back accurate results over large datasets.
+
+Natural language question examples:
+"Can you get me films from the 60s with rating higher than 7 with London in the title"
 "Can I get name and email from the last 5 customers from Europe"
 "Can you get me all the info for customers who joined between 2021 and 2023"
 
-This can be done without loading the data into a database and without writing any SQL queries.  The only input is the qata and a question.
+A working example can be found at <URL>
+
+
 <h1>Why?</h1>
 We want to have the best of both worlds, combine the ability to ask questions in a natural way; with the computation accuracy and effieciency of computation.
 
@@ -16,11 +25,13 @@ We want to be able to ask questions directly of data, even if that data is incom
 Lets take the example of the IMDB dataset (1 million+ rows) for example. (URL) we might want to find a movie set in a particlar location from a particular time period with a cetain rating.
 
 How would we do this currently?
-We could manually read through the table finding things that look interesting - given the table has over 1 million rows, this could be slow.
-We could load the data into a database and write a SQL query to get the data we want - perhaps if this is a common task and it proves worth the effort.
-Load the Data into an LLM and ask the AI the question - this can work, however it has some disadvantages. LLM's have limited context windows, they can make mistakes and they can be slow.
+• We could manually read through the table finding things that look interesting - given the table has over 1 million rows, this could be slow.
+• We could load the data into a database and write a SQL query to get the data we want - perhaps if this is a common task and it proves worth the effort.
+• Load the Data into an LLM and ask the AI the question - this can work, however it has some disadvantages. LLM's have limited context windows, they can make mistakes and they can be slow. (More below)
 
 We want the best of all worlds, and it is possible to have it, with the right approach.  Turning natural language questions into fast computable steps that can be run on the data directly.
+
+
 <h1>How?</h1>
 Table AI is a Proof of concept for for extracting and transforming information from a structured data source using an
 artificial intelligence (AI) model, comprising:
@@ -30,8 +41,8 @@ source; Programmatically generating metadata from the structured data source, wh
 metadata outlines the structure and types of the data;
 2. Providing the natural language query, metadata, and predefined instructions on creating
 transformation rules to the AI model;
-3. Using the AI model to autonomously generate one or more transformation rules based on the
-provided inputs, wherein each transformation rule comprises a method and associated
+3. Using the AI model to autonomously generate one or more transformation steps based on the
+provided inputs, wherein each transformation step comprises a method and associated
 parameters;
 4. Applying the generated transformation rules to the structured data source using a
 transformation engine to retrieve or compute the requested information.
@@ -44,10 +55,32 @@ They do not have to be complete or complex, so you avoid the challenge of unders
 
 Claims:
 Predefined instructions are carefully crafted to leverage the AI model's natural language understanding capabilities, resulting in transformation rules that are:
-• More intuitive, flexible, and robust to variations in data structure and query semantics
-compared to traditional DSL approaches such as directly generating Structured Query
-Language (SQL) commands.
+• More intuitive, flexible, and robust to variations in data structure and query semantics compared to traditional DSL approaches such as directly generating Structured Query Language (SQL) commands.
+• We can disconnect the generation of rules from the size of the data.  The system outlined here works in the same way for 10 rows or 10 million rows.
 • Better leverage the capabilities of the models to generate the correct rules. (Robustly reproducely, easy to debug each step)
 • Has some surprising results.  Such as semantic expansion, such as asking a customer table for every customer in Europe returns a step with - [
 "United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands", "Greece", "Sweden", "Poland", "Belgium", "Finland", "Denmark", "Ireland", "Portugal", "Austria", "Hungary", "Czech Republic", "Romania", "Bulgaria", "Slovakia", "Croatia", "Estonia", "Slovenia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"
 ]
+• Because of the interaction of LLM and computation, it can also provide error correcting and data cleaning steps.
+Because we can robustly infer type information we can use computation to find data that cannot be converted to a type, and feed this back into the LLM  to fix the errors.
+For example - we infer "signup_date" is a date, but some rows have dates formatted as ISO8601 and some as "dd/mm/yyyy".  We can use computation to EXTRACT the rows that are not valid dates and feed this back into the LLM to fix the errors (updating the original data).
+
+<h1>What is happening?</h1>
+In the worked example, we are effectively creating a compression of the data, we enter a natural language question and data, and we get back a compressed version of the data.
+That could be a final answer or a part of a larger pipeline that feeds into other computations or a LLM  to reach a final answer.
+
+<h1>Why not just use a LLM?</h1>
+While LLM's are improving all of the time, and in the short time since I started this have been able to go from severe restrictions on input size to being able to handle large datasets, to accepting the full IMDB dataset.
+They still have some limitations.
+
+Advantages over using a LLM directly:
+• Faster - LLM's can be slow, especially with large datasets.
+• More accurate - LLM's can make mistakes, especially with large datasets, with the correct computation you can guarantee correctness.
+• More flexible - LLM's can be hard to debug and understand, especially with large datasets.
+• More efficient - LLM's can be wasteful, especially with large datasets.
+• Cacheing - Transform steps can be cached and reused, LLM's can be slow to generate the same answer twice.
+
+<h1>Future work<h1>
+• All work was done with off the shelf base models. There is an opportunity to fine tune the model to better understand the data and generate better steps.
+• The creation of optimal instructions, the data extraction machine has 4 rules, there is an opportunity to design a more optimal set of rules.
+• Other domains, that could benefit from this approach.  The key insight of the work is that the structure of the data gives you alot of information about how to process it, I would like to think of other domains where abstract concepts of extraction or modification can leverage structure to make an abstract machine a worthwhile efficiency saving.
