@@ -1,126 +1,200 @@
 <div class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-black">
   <div class="prose prose-lg mx-auto">
-<h1 class="text-3xl font-bold">Table AI</h1>
-<h1 class="text-2xl font-semibold mt-8">What?</h1>
-<p>A proof of concept of using a large language model (LLM) to generate a bespoke "transformation machine" that uses an LLM to generate a series
-of "transform steps" to turn natural language into computation.</p>
-<br>
-<p>What follows is a description of a concrete example and implementation, I will return the the more general question later on.</p>
-<br>
-<p>Specific Example:</p>
-<p>What I want is ability to ask natural language questions of tabular data and reliably get back accurate results over large datasets.</p>
-<br>
+    <h1 class="text-3xl font-bold">Table AI</h1>
+    <h1 class="text-2xl font-semibold mt-8">What?</h1>
+    <p>
+      A proof of concept of using a large language model (LLM) to generate a bespoke "transformation machine" that uses an LLM to generate a series
+      of "transform steps" to turn natural language into computation.
+    </p>
+    <br />
+    <p>
+      What follows is a description of a concrete example and implementation, I will return the the more general question later on.
+    </p>
+    <br />
+    <p>Specific Example:</p>
+    <p>
+      What I want is ability to ask natural language questions of tabular data and reliably get back accurate results over large datasets.
+    </p>
+    <br />
 
-<p>Natural language question examples:</p>
-<code class="text-cyan-500">
-"Can you get me films from the 60s with rating higher than 7 with London in the title"<br>
-"Can I get name and email from the last 5 customers from Europe"<br>
-"Can you get me all the info for customers who joined between 2021 and 2023"<br>
-</code>
-<br>
-<p>A working example can be found at <.link href="/talk/uploads/imdb" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">link</.link></p>
+    <p>Natural language question examples:</p>
+    <code class="text-cyan-500">
+      "Can you get me films from the 60s with rating higher than 7 with London in the title"<br />
+      "Can I get name and email from the last 5 customers from Europe"<br />
+      "Can you get me all the info for customers who joined between 2021 and 2023"<br />
+    </code>
+    <br />
+    <p>
+      A working example can be found at
+      <.link
+        href="/talk/uploads/imdb"
+        class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+      >
+        link
+      </.link>
+    </p>
 
+    <h1 class="text-2xl font-semibold mt-8">Why?</h1>
+    <p>
+      We want to have the best of both worlds, combine the ability to ask questions in a natural way; with the computation accuracy and efficiency of computation.
+    </p>
+    <br />
+    <p>
+      We want to be able to ask questions of data without having to write SQL queries or load the data into a database.
+    </p>
+    <p>
+      We want to be able to ask questions directly of data, even if that data is incomplete or badly formatted.
+    </p>
+    <br />
+    <p>
+      Lets take the example of the IMDB dataset (1 million+ rows) for example. (URL) we might want to find a movie set in a particlar location from a particular time period with a certain rating.
+    </p>
+    <br />
+    <code class="text-cyan-500 text-xs">
+      id,title,type,genres,averageRating,numVotes,releaseYear<br />
+      tt0000009,"Miss Jerry",movie,Romance,5.4,215,1894<br />
+      tt0000147,"The Corbett-Fitzsimmons Fight",movie,"Documentary, News, Sport",5.2,539,1897<br />
+      tt0000502,Bohemios,movie,,4.4,18,1905<br />
+      tt0000574,"The Story of the Kelly Gang",movie,"Action, Adventure, Biography",6,941,1906<br />
+    </code>
+    <br />
+    <p>How would we do this currently?</p>
+    <ul class="list-disc">
+      <li>
+        We could manually read through the table finding things that look interesting - given the table has over 1 million rows, this could be slow.
+      </li>
+      <li>
+        We could load the data into a database and write a SQL query to get the data we want - perhaps if this is a common task and it proves worth the effort.
+      </li>
+      <li>
+        Load the Data into an LLM and ask the AI the question - this can work, however it has some disadvantages. LLM's have limited context windows, they can make mistakes and they can be slow. (More below)
+      </li>
+    </ul>
+    <br />
+    <p>
+      We want the best of all worlds, and it is possible to have it, with the right approach.  Turning natural language questions into fast computable steps that can be run on the data directly.
+    </p>
 
-<h1 class="text-2xl font-semibold mt-8">Why?</h1>
-<p>We want to have the best of both worlds, combine the ability to ask questions in a natural way; with the computation accuracy and efficiency of computation.</p>
-<br>
-<p>We want to be able to ask questions of data without having to write SQL queries or load the data into a database.</p>
-<p>We want to be able to ask questions directly of data, even if that data is incomplete or badly formatted.</p>
-<br>
-<p>Lets take the example of the IMDB dataset (1 million+ rows) for example. (URL) we might want to find a movie set in a particlar location from a particular time period with a certain rating.</p>
-<br>
-<code class="text-cyan-500 text-xs">
-id,title,type,genres,averageRating,numVotes,releaseYear<br>
-tt0000009,"Miss Jerry",movie,Romance,5.4,215,1894<br>
-tt0000147,"The Corbett-Fitzsimmons Fight",movie,"Documentary, News, Sport",5.2,539,1897<br>
-tt0000502,Bohemios,movie,,4.4,18,1905<br>
-tt0000574,"The Story of the Kelly Gang",movie,"Action, Adventure, Biography",6,941,1906<br>
-</code>
-<br>
-<p>How would we do this currently?</p>
-<ul class="list-disc">
-<li>We could manually read through the table finding things that look interesting - given the table has over 1 million rows, this could be slow.</li>
-<li>We could load the data into a database and write a SQL query to get the data we want - perhaps if this is a common task and it proves worth the effort.</li>
-<li>Load the Data into an LLM and ask the AI the question - this can work, however it has some disadvantages. LLM's have limited context windows, they can make mistakes and they can be slow. (More below)</li>
-</ul>
-<br>
-<p>We want the best of all worlds, and it is possible to have it, with the right approach.  Turning natural language questions into fast computable steps that can be run on the data directly.</p>
+    <h1 class="text-2xl font-semibold mt-8">How?</h1>
+    <p>
+      The process is roughly:
+    </p>
+    <ol class="list-decimal list-inside">
+      <li>
+        <strong>Metadata Generation:</strong>
+        We programmatically inspect the structured data source and create metadata—information about
+        columns, their types, and structure.
+      </li>
+      <li>
+        <strong>LLM Generation of Steps:</strong>
+        We feed the LLM the natural language query, the metadata, and carefully crafted
+        instructions. Instead of asking it for the final answer, we ask it to produce a set of transformation steps. For example,
+        if you say, "Get me all customers in Europe," the LLM might produce a filter step that includes a list of European countries.
+      </li>
+      <li>
+        <strong>Execution on the Data:</strong>
+        Another engine (like a Python script with Pandas) runs these transformation steps on the data.
+        If a step fails—say, dates are in inconsistent formats—we can feed those problematic rows back to the LLM and fix them.
+      </li>
+      <li>
+        <strong>Result:</strong>
+        The output is a clean, final subset of data or an answer. The LLM only generated the instructions, so it’s
+        not slowed down or confused by huge datasets.
+      </li>
+    </ol>
+    <h1 class="text-2xl font-semibold mt-8">A DSL for Intelligence</h1>
+    <p>
+      I claim that table extraction is just one example of an application of using a LLM to generate accurate, computable steps from natural language.
+      These steps can be designed to better use the AI's generation capabilites, producing not an answer, but in effect a custom program for a specific question and data source.
+    </p>
+    <br />
+    <p>
+      These steps can be built up one by one to define certain capabilites on the data, such as filtering, sorting, grouping, joining, etc.
+      They do not have to be complete or complex, so you avoid the challenge of understanding a complete DSL such as SQL or AWK.
+    </p>
+    <br />
+    <p>Claims:</p>
+    <p>
+      Predefined instructions are carefully crafted to leverage the AI model's natural language understanding capabilities, resulting in transformation rules that are:
+    </p>
+    <ul class="list-disc">
+      <li>
+        More intuitive, flexible, and robust to variations in data structure and query semantics compared to traditional DSL approaches such as directly generating Structured Query Language (SQL) commands.
+      </li>
+      <li>
+        We can disconnect the generation of rules from the size of the data.  The system outlined here works in the same way for 10 rows or 10 million rows.
+      </li>
+      <li>
+        Better leverage the capabilities of the models to generate the correct rules. (Robustly reproducely, easy to debug each step)
+      </li>
+      <li>
+        Has some surprising results.  Such as semantic expansion, such as asking a customer table for every customer in Europe returns a step with - [
+        "United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands", "Greece", "Sweden", "Poland", "Belgium", "Finland", "Denmark", "Ireland", "Portugal", "Austria", "Hungary", "Czech Republic", "Romania", "Bulgaria", "Slovakia", "Croatia", "Estonia", "Slovenia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"
+        ]
+      </li>
+      <li>
+        Because of the interaction of LLM and computation, it can also provide error correcting and data cleaning steps.
+        Because we can robustly infer type information we can use computation to find data that cannot be converted to a type, and feed this back into the LLM  to fix the errors.
+        For example - we infer "signup_date" is a date, but some rows have dates formatted as ISO8601 and some as "4th Feb, 2024".  We can use computation to EXTRACT the rows that are not valid dates and feed this back into the LLM to fix the errors (updating the original data).
+      </li>
+    </ul>
 
+    <h1 class="text-2xl font-semibold mt-8">What is happening?</h1>
+    <p>
+      In the worked example, we are effectively creating a compression of the data, we enter a natural language question and data, and we get back a compressed version of the data.
+      That could be a final answer or a part of a larger pipeline that feeds into other computations or a LLM  to reach a final answer.
+    </p>
 
-<h1 class="text-2xl font-semibold mt-8">How?</h1>
-   <p>
-     The process is roughly:
-   </p>
-   <ol class="list-decimal list-inside">
-     <li>
-       <strong>Metadata Generation:</strong> We programmatically inspect the structured data source and create metadata—information about
-       columns, their types, and structure.
-     </li>
-     <li>
-       <strong>LLM Generation of Steps:</strong> We feed the LLM the natural language query, the metadata, and carefully crafted
-       instructions. Instead of asking it for the final answer, we ask it to produce a set of transformation steps. For example,
-       if you say, "Get me all customers in Europe," the LLM might produce a filter step that includes a list of European countries.
-     </li>
-     <li>
-       <strong>Execution on the Data:</strong> Another engine (like a Python script with Pandas) runs these transformation steps on the data.
-       If a step fails—say, dates are in inconsistent formats—we can feed those problematic rows back to the LLM and fix them.
-     </li>
-     <li>
-       <strong>Result:</strong> The output is a clean, final subset of data or an answer. The LLM only generated the instructions, so it’s
-       not slowed down or confused by huge datasets.
-     </li>
-   </ol>
-<h1 class="text-2xl font-semibold mt-8">A DSL for Intelligence</h1>
-<p>I claim that table extraction is just one example of an application of using a LLM to generate accurate, computable steps from natural language.
-These steps can be designed to better use the AI's generation capabilites, producing not an answer, but in effect a custom program for a specific question and data source.</p>
-<br>
-<p>These steps can be built up one by one to define certain capabilites on the data, such as filtering, sorting, grouping, joining, etc.
-They do not have to be complete or complex, so you avoid the challenge of understanding a complete DSL such as SQL or AWK.</p>
-<br>
-<p>Claims:</p>
-<p>Predefined instructions are carefully crafted to leverage the AI model's natural language understanding capabilities, resulting in transformation rules that are:</p>
-<ul class="list-disc">
-<li> More intuitive, flexible, and robust to variations in data structure and query semantics compared to traditional DSL approaches such as directly generating Structured Query Language (SQL) commands.</li>
-<li> We can disconnect the generation of rules from the size of the data.  The system outlined here works in the same way for 10 rows or 10 million rows.</li>
-<li> Better leverage the capabilities of the models to generate the correct rules. (Robustly reproducely, easy to debug each step)</li>
-<li> Has some surprising results.  Such as semantic expansion, such as asking a customer table for every customer in Europe returns a step with - [
-"United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands", "Greece", "Sweden", "Poland", "Belgium", "Finland", "Denmark", "Ireland", "Portugal", "Austria", "Hungary", "Czech Republic", "Romania", "Bulgaria", "Slovakia", "Croatia", "Estonia", "Slovenia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"
-]</li>
-<li> Because of the interaction of LLM and computation, it can also provide error correcting and data cleaning steps.
-Because we can robustly infer type information we can use computation to find data that cannot be converted to a type, and feed this back into the LLM  to fix the errors.
-For example - we infer "signup_date" is a date, but some rows have dates formatted as ISO8601 and some as "4th Feb, 2024".  We can use computation to EXTRACT the rows that are not valid dates and feed this back into the LLM to fix the errors (updating the original data).</li>
-</ul>
+    <h1 class="text-2xl font-semibold mt-8">Why not just use a LLM?</h1>
+    <p>
+      While LLM's are improving all of the time, and in the short time since I started this have been able to go from severe restrictions on input size to being able to handle large datasets, to accepting the full IMDB dataset.
+      They still have some limitations.
+    </p>
 
-<h1 class="text-2xl font-semibold mt-8">What is happening?</h1>
-<p>In the worked example, we are effectively creating a compression of the data, we enter a natural language question and data, and we get back a compressed version of the data.
-That could be a final answer or a part of a larger pipeline that feeds into other computations or a LLM  to reach a final answer.</p>
+    <p>Advantages over using a LLM directly:</p>
+    <ul class="list-disc">
+      <li>Faster - LLM's can be slow, especially with large datasets.</li>
+      <li>
+        More accurate - LLM's can make mistakes, especially with large datasets, with the correct computation you can guarantee correctness.
+      </li>
+      <li>
+        More flexible - LLM's can be hard to debug and understand, especially with large datasets.
+      </li>
+      <li>More efficient - LLM's can be wasteful, especially with large datasets.</li>
+      <li>
+        Caching - Transform steps can be cached and reused, LLM's can be slow to generate the same answer twice.
+      </li>
+    </ul>
+    <h1 class="text-2xl font-semibold mt-8">FaQs</h1>
+    <ul class="list-disc">
+      <li>
+        <strong>Why not use SQL?:</strong> TODO.
+      </li>
+      <li>
+        <strong>How is this different to ToolFormer / Tool use:</strong> TODO.
+      </li>
+      <li>
+        <strong>???</strong> TODO
+      </li>
+    </ul>
 
-<h1 class="text-2xl font-semibold mt-8">Why not just use a LLM?</h1>
-<p>While LLM's are improving all of the time, and in the short time since I started this have been able to go from severe restrictions on input size to being able to handle large datasets, to accepting the full IMDB dataset.
-They still have some limitations.</p>
-
-<p>Advantages over using a LLM directly:</p>
-<ul class="list-disc">
-<li> Faster - LLM's can be slow, especially with large datasets.</li>
-<li> More accurate - LLM's can make mistakes, especially with large datasets, with the correct computation you can guarantee correctness.</li>
-<li> More flexible - LLM's can be hard to debug and understand, especially with large datasets.</li>
-<li> More efficient - LLM's can be wasteful, especially with large datasets.</li>
-<li> Caching - Transform steps can be cached and reused, LLM's can be slow to generate the same answer twice.</li>
-</ul>
-<h1 class="text-2xl font-semibold mt-8">Future work</h1>
-<ul class="list-disc">
-     <li>
-       <strong>Fine-tuning:</strong> We currently use off-the-shelf base models. Training a model specifically for this task might
-       yield even better, more reliable transformation steps.
-     </li>
-     <li>
-       <strong>Optimized Instructions:</strong> Right now, we have a small set of rules. There’s an opportunity to refine these instructions
-       to produce more robust and complex transformations.
-     </li>
-     <li>
-       <strong>Other Domains:</strong> This approach isn’t limited to tables. Anywhere you have structured or semi-structured data—like logs
-       or certain configuration formats—you could potentially apply the same pattern.
-     </li>
-   </ul>
-</div>
+    <h1 class="text-2xl font-semibold mt-8">Future work</h1>
+    <ul class="list-disc">
+      <li>
+        <strong>Fine-tuning:</strong>
+        We currently use off-the-shelf base models. Training a model specifically for this task might
+        yield even better, more reliable transformation steps.
+      </li>
+      <li>
+        <strong>Optimized Instructions:</strong>
+        Right now, we have a small set of rules. There’s an opportunity to refine these instructions
+        to produce more robust and complex transformations.
+      </li>
+      <li>
+        <strong>Other Domains:</strong>
+        This approach isn’t limited to tables. Anywhere you have structured or semi-structured data—like logs
+        or certain configuration formats—you could potentially apply the same pattern.
+      </li>
+    </ul>
+  </div>
 </div>
