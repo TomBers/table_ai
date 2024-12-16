@@ -2,8 +2,38 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
+body {
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    line-height: 1.6;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 1.6rem;
+    line-height: 2.25rem;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: 700;
+}
+
+h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 1em;
+}
+
+strong {
+    color: #1e40af;
+}
+
 /* This file is for your main application CSS */
 ul,
 ol {
     margin-inline-start: 25px;
+    margin-bottom: 1.5em;
 }
