@@ -16,12 +16,12 @@
 
     <br />
     <p>
-      A working example can be found at
+      A working example for the IMDB dataset can be found
       <.link
         href="/talk/uploads/imdb"
         class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
       >
-        link
+        here
       </.link>
     </p>
 
@@ -139,6 +139,8 @@
         not slowed down or confused by huge datasets.
       </li>
     </ol>
+    <img src="/images/how_it_works.png" />
+
     <h1>A DSL for Intelligence</h1>
     <p>
       I claim that table extraction is just one example of an application of using a LLM to generate accurate, computable steps from natural language.
@@ -162,7 +164,7 @@
         We can disconnect the generation of rules from the size of the data.  The system outlined here works in the same way for 10 rows or 10 million rows.
       </li>
       <li>
-        Better leverage the capabilities of the models to generate the correct rules. (Robustly reproducely, easy to debug each step)
+        Better leverage the capabilities of the models to generate the correct rules. (Robustly reproduced, easy to debug each step)
       </li>
       <li>
         Has some surprising results.  Such as semantic expansion, such as asking a customer table for every customer in Europe returns a step with - <code>["United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands", "Greece", "Sweden", "Poland", "Belgium", "Finland", "Denmark", "Ireland", "Portugal", "Austria", "Hungary", "Czech Republic", "Romania", "Bulgaria", "Slovakia", "Croatia", "Estonia", "Slovenia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"]</code>
@@ -181,9 +183,7 @@
     </p>
 
     <h1>Why not just use a LLM?</h1>
-    <p>While Large Language Models are increasingly capable of handling larger datasets and performing complex analyses, there are several fundamental limitations that make a hybrid approach more practical:</p>
-
-    <p>Advantages over using a LLM directly:</p>
+    <p>While Large Language Models are increasingly capable of handling larger datasets and performing complex analyses, there are several fundamental limitations that make a hybrid approach more practical, advantages over using a LLM directly:</p>
     <br>
     <div class="point">
                 <h4>1. Computational Efficiency</h4>
