@@ -9,16 +9,11 @@
     <br />
     <p>
       What follows is a description of a concrete example and implementation, I will return the the more general question later on.
-      Specific problem: What I want is ability to ask natural language questions of tabular data and reliably get back accurate results over large datasets.
+      Specific problem: What I want is ability to ask <a href="#NLQuery" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">natural language questions</a> of <a href="#FaQTable" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">tabular data</a> and reliably get back accurate results over large datasets.
     </p>
     <br />
 
-    <p>Natural language question examples:</p>
-    <code class="text-cyan-500">
-      "Can you get me films from the 60s with rating higher than 7 with London in the title"<br />
-      "Can I get name and email from the last 5 customers from Europe"<br />
-      "Can you get me all the info for customers who joined between 2021 and 2023"<br />
-    </code>
+
     <br />
     <p>
       A working example can be found at
@@ -43,17 +38,60 @@
     </p>
     <br />
     <p>
-      Lets take the example of the IMDB dataset (1 million+ rows) for example. (URL) we might want to find a movie set in a particlar location from a particular time period with a certain rating.
+      Lets take the example of the IMDB dataset (1 million+ rows) for example (<a href="https://www.kaggle.com/datasets/octopusteam/full-imdb-dataset?resource=download" target="_blank" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">https://www.kaggle.com/datasets/octopusteam/full-imdb-dataset?resource=download</a>).  We might want to find a movie set in a particlar location from a particular time period with a certain rating.
     </p>
-    <br />
-    <code class="text-cyan-500 text-xs">
-      id,title,type,genres,averageRating,numVotes,releaseYear<br />
-      tt0000009,"Miss Jerry",movie,Romance,5.4,215,1894<br />
-      tt0000147,"The Corbett-Fitzsimmons Fight",movie,"Documentary, News, Sport",5.2,539,1897<br />
-      tt0000502,Bohemios,movie,,4.4,18,1905<br />
-      tt0000574,"The Story of the Kelly Gang",movie,"Action, Adventure, Biography",6,941,1906<br />
-    </code>
-    <br />
+    <table>
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Genres</th>
+                  <th>Rating</th>
+                  <th>Votes</th>
+                  <th>Year</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>tt0000009</td>
+                  <td>Miss Jerry</td>
+                  <td>movie</td>
+                  <td>Romance</td>
+                  <td class="rating">5.4</td>
+                  <td class="votes">215</td>
+                  <td>1894</td>
+              </tr>
+              <tr>
+                  <td>tt0000147</td>
+                  <td>The Corbett-Fitzsimmons Fight</td>
+                  <td>movie</td>
+                  <td>Documentary, News, Sport</td>
+                  <td class="rating">5.2</td>
+                  <td class="votes">539</td>
+                  <td>1897</td>
+              </tr>
+              <tr>
+                  <td>tt0000502</td>
+                  <td>Bohemios</td>
+                  <td>movie</td>
+                  <td></td>
+                  <td class="rating">4.4</td>
+                  <td class="votes">18</td>
+                  <td>1905</td>
+              </tr>
+              <tr>
+                  <td>tt0000574</td>
+                  <td>The Story of the Kelly Gang</td>
+                  <td>movie</td>
+                  <td>Action, Adventure, Biography</td>
+                  <td class="rating">6.0</td>
+                  <td class="votes">941</td>
+                  <td>1906</td>
+              </tr>
+          </tbody>
+      </table>
+
     <p>How would we do this currently?</p>
     <ul class="list-disc">
       <li>
@@ -70,7 +108,10 @@
     <p>
       We want the best of all worlds, and it is possible to have it, with the right approach.  Turning natural language questions into fast computable steps that can be run on the data directly.
     </p>
+    <h1>System in action</h1>
+    <div style="padding:50.82% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1034182188?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="NLP IMDB Search"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
 
+    <div style="padding:50.82% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1034182686?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="NLP Error Correction"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
     <h1>How?</h1>
     <p>
       The process is roughly:
@@ -207,6 +248,65 @@
                 </ul>
             </div>
     <h1>FaQs</h1>
+    <h2 id="NLQuery">Example of natural language queries</h2>
+    <code class="text-cyan-500">
+      "Can you get me films from the 60s with rating higher than 7 with London in the title"<br />
+      "Can I get name and email from the last 5 customers from Europe"<br />
+      "Can you get me all the info for customers who joined between 2021 and 2023"<br />
+    </code>
+    <h2 id="FaQTable">Example table from IMDB data</h2>
+    <table>
+          <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>Type</th>
+                  <th>Genres</th>
+                  <th>Rating</th>
+                  <th>Votes</th>
+                  <th>Year</th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr>
+                  <td>tt0000009</td>
+                  <td>Miss Jerry</td>
+                  <td>movie</td>
+                  <td>Romance</td>
+                  <td class="rating">5.4</td>
+                  <td class="votes">215</td>
+                  <td>1894</td>
+              </tr>
+              <tr>
+                  <td>tt0000147</td>
+                  <td>The Corbett-Fitzsimmons Fight</td>
+                  <td>movie</td>
+                  <td>Documentary, News, Sport</td>
+                  <td class="rating">5.2</td>
+                  <td class="votes">539</td>
+                  <td>1897</td>
+              </tr>
+              <tr>
+                  <td>tt0000502</td>
+                  <td>Bohemios</td>
+                  <td>movie</td>
+                  <td></td>
+                  <td class="rating">4.4</td>
+                  <td class="votes">18</td>
+                  <td>1905</td>
+              </tr>
+              <tr>
+                  <td>tt0000574</td>
+                  <td>The Story of the Kelly Gang</td>
+                  <td>movie</td>
+                  <td>Action, Adventure, Biography</td>
+                  <td class="rating">6.0</td>
+                  <td class="votes">941</td>
+                  <td>1906</td>
+              </tr>
+          </tbody>
+      </table>
+
     <h2>Why not use SQL?</h2>
      <p>SQL is powerful but requires technical expertise and a proper database setup. This approach offers several advantages:</p>
      <ol class="list-decimal">
