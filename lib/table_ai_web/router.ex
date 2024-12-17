@@ -18,7 +18,7 @@ defmodule TableAiWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
-    live "/file_upload", FileUploadLive
+    # live "/file_upload", FileUploadLive
     live "/talk/uploads/:path", TableLive
     live "/file/:path", FileLive
   end
