@@ -77,3 +77,28 @@ tr:hover {
 .votes {
     text-align: right;
 }
+
+pre {
+    background-color: #1e1e1e;
+    color: #d4d4d4;
+    padding: 1em;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+    line-height: 1.5;
+}
+.bracket {
+    color: #d4d4d4;
+}
+.key {
+    color: #9cdcfe;
+}
+.string {
+    color: #ce9178;
+}
+.number {
+    color: #b5cea8;
+}
+.null {
+    color: #569cd6;
+}
