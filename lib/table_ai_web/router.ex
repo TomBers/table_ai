@@ -19,8 +19,8 @@ defmodule TableAiWeb.Router do
 
     live "/", HomeLive
     # live "/file_upload", FileUploadLive
-    live "/talk/uploads/:path", TableLive
-    live "/file/:path", FileLive
+    # live "/talk/uploads/:path", TableLive
+    # live "/file/:path", FileLive
   end
 
   # Other scopes may use custom stacks.
