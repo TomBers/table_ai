@@ -1,0 +1,578 @@
+<div class="max-w-4xl mx-auto py-10 px-4 sm:px-6 lg:px-8 text-black">
+  <div class="prose prose-lg mx-auto">
+    <h1 class="text-3xl font-bold">Table AI</h1>
+    <h1>What?</h1>
+    <p>
+      A proof of concept of using a large language model (LLM) to generate a bespoke "transformation machine" that uses an LLM to generate a series
+      of "transform steps" to turn natural language into computation.
+    </p>
+    <br />
+    <p>
+      What follows is a description of a concrete example and implementation, I will return the the more general question later on.
+      Specific problem: What I want is ability to ask
+      <a
+        href="#NLQuery"
+        class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+      >
+        natural language questions
+      </a>
+      of
+      <a
+        href="#FaQTable"
+        class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+      >
+        tabular data
+      </a>
+      and reliably get back accurate results over large datasets.
+    </p>
+    <br />
+
+    <p>
+      A working example for the IMDB dataset
+      <.link href="/" class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600">
+        coming soon
+      </.link>
+    </p>
+
+    <h1>Why?</h1>
+    <p>
+      We want to have the best of both worlds, combine the ability to ask questions in a natural way; with the computation accuracy and efficiency of computation.
+    </p>
+    <br />
+    <p>
+      We want to be able to ask questions of data without having to write SQL queries or load the data into a database.
+    </p>
+    <p>
+      We want to be able to ask questions directly of data, even if that data is incomplete or badly formatted.
+    </p>
+    <br />
+    <p>
+      Lets take the example of the IMDB dataset (1 million+ rows) for example (<a
+        href="https://www.kaggle.com/datasets/octopusteam/full-imdb-dataset?resource=download"
+        target="_blank"
+        class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+      >https://www.kaggle.com/datasets/octopusteam/full-imdb-dataset?resource=download</a>).  We might want to find a movie set in a particlar location from a particular time period with a certain rating.
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Genres</th>
+          <th>Rating</th>
+          <th>Votes</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>tt0000009</td>
+          <td>Miss Jerry</td>
+          <td>movie</td>
+          <td>Romance</td>
+          <td class="rating">5.4</td>
+          <td class="votes">215</td>
+          <td>1894</td>
+        </tr>
+        <tr>
+          <td>tt0000147</td>
+          <td>The Corbett-Fitzsimmons Fight</td>
+          <td>movie</td>
+          <td>Documentary, News, Sport</td>
+          <td class="rating">5.2</td>
+          <td class="votes">539</td>
+          <td>1897</td>
+        </tr>
+        <tr>
+          <td>tt0000502</td>
+          <td>Bohemios</td>
+          <td>movie</td>
+          <td></td>
+          <td class="rating">4.4</td>
+          <td class="votes">18</td>
+          <td>1905</td>
+        </tr>
+        <tr>
+          <td>tt0000574</td>
+          <td>The Story of the Kelly Gang</td>
+          <td>movie</td>
+          <td>Action, Adventure, Biography</td>
+          <td class="rating">6.0</td>
+          <td class="votes">941</td>
+          <td>1906</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>How would we do this currently?</p>
+    <ul class="list-disc">
+      <li>
+        We could manually read through the table finding things that look interesting - given the table has over 1 million rows, this could be slow.
+      </li>
+      <li>
+        We could load the data into a database and write a SQL query to get the data we want - perhaps if this is a common task and it proves worth the effort.
+      </li>
+      <li>
+        Load the Data into an LLM and ask the AI the question - this can work, however it has some disadvantages. LLM's have limited context windows, they can make mistakes and they can be slow. (<a
+          href="#LLMDrawback"
+          class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        >More below</a>)
+      </li>
+    </ul>
+    <p>
+      We want the best of all worlds, and it is possible to have it, with the right approach.  Turning natural language questions into fast computable steps that can be run on the data directly.
+    </p>
+    <h1>System in action</h1>
+    <div style="padding:50.82% 0 0 0;position:relative;">
+      <iframe
+        src="https://player.vimeo.com/video/1034182188?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;"
+        title="NLP IMDB Search"
+      >
+      </iframe>
+    </div>
+    <script src="https://player.vimeo.com/api/player.js">
+    </script>
+
+    <div style="padding:50.82% 0 0 0;position:relative;">
+      <iframe
+        src="https://player.vimeo.com/video/1034182686?title=0&amp;byline=0&amp;portrait=0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+        frameborder="0"
+        allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
+        style="position:absolute;top:0;left:0;width:100%;height:100%;"
+        title="NLP Error Correction"
+      >
+      </iframe>
+    </div>
+    <script src="https://player.vimeo.com/api/player.js">
+    </script>
+    <h1>How?</h1>
+    <p>
+      The process is roughly:
+    </p>
+    <ol class="list-decimal list-inside">
+      <li>
+        <strong>Metadata Generation:</strong>
+        We programmatically inspect the structured data source and create metadata — information about
+        columns, their types, and structure.
+      </li>
+      <li>
+        <strong>LLM Generation of Steps:</strong>
+        We feed the LLM the natural language query, the metadata, and carefully crafted
+        instructions. Instead of asking it for the final answer, we ask it to produce a set of <a
+          href="#transformSteps"
+          class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        >transformation steps</a>. For example,
+        if you say, "Get me all customers in Europe," the LLM might produce a filter step that includes a list of European countries.
+      </li>
+      <li>
+        <strong>Execution on the Data:</strong>
+        Another engine (like a Python script with Pandas) runs these transformation steps on the data.
+        If a step fails—say, dates are in inconsistent formats—we can feed those problematic rows back to the LLM and fix them.
+      </li>
+      <li>
+        <strong>Result:</strong>
+        The output is a clean, final subset of data or an answer. The LLM only generated the instructions, so it’s
+        not slowed down or confused by huge datasets.
+      </li>
+    </ol>
+    <img src="/images/how_it_works.png" />
+
+    <h1>A DSL for Intelligence</h1>
+    <p>
+      I claim that table extraction is just one example of an application of using a LLM to generate accurate, computable steps from natural language.
+      These steps can be designed to better use the AI's generation capabilites, producing not an answer, but in effect a custom program for a specific question and data source.
+    </p>
+    <br />
+    <p>
+      These steps can be built up one by one to define certain capabilites on the data, such as filtering, sorting, grouping, joining, etc.
+      They do not have to be complete or complex, so you avoid the challenge of understanding a complete DSL such as SQL or AWK.
+    </p>
+    <br />
+    <p>
+      Predefined instructions are carefully crafted to leverage the AI model's natural language understanding capabilities, resulting in transformation rules that are:
+    </p>
+    <br />
+    <ul class="list-disc">
+      <li>
+        More intuitive, flexible, and robust to variations in data structure and query semantics compared to traditional DSL approaches such as directly generating Structured Query Language (SQL) commands.
+      </li>
+      <li>
+        We can disconnect the generation of rules from the size of the data.  The system outlined here works in the same way for 10 rows or 10 million rows.
+      </li>
+      <li>
+        Better leverage the capabilities of the models to generate the correct rules. (Robustly reproduced, easy to debug each step)
+      </li>
+      <li>
+        Has some surprising results.  Such as <a
+          href="#semanticExpansion"
+          class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        >semantic expansion</a>, such as asking a customer table for every customer in Europe returns a step with -
+        <code>
+          ["United Kingdom", "Germany", "France", "Italy", "Spain", "Netherlands", "Greece", "Sweden", "Poland", "Belgium", "Finland", "Denmark", "Ireland", "Portugal", "Austria", "Hungary", "Czech Republic", "Romania", "Bulgaria", "Slovakia", "Croatia", "Estonia", "Slovenia", "Latvia", "Lithuania", "Luxembourg", "Malta", "Cyprus"]
+        </code>
+      </li>
+      <li>
+        Because of the interaction of LLM and computation, it can also provide
+        <a
+          href="#errorCorrection"
+          class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        >
+          error correcting
+        </a>
+        and data cleaning steps.
+        Because we can robustly infer type information we can use computation to find data that cannot be converted to a type, and feed this back into the LLM  to fix the errors.
+        For example - we infer "signup_date" is a date, but some rows have dates formatted as ISO8601 and some as "4th Feb, 2024".  We can use computation to EXTRACT the rows that are not valid dates and feed this back into the LLM to fix the errors (updating the original data).
+      </li>
+    </ul>
+
+    <h1>What is happening?</h1>
+    <p>
+      In the worked example, we are effectively creating a compression of the data, we enter a natural language question and data, and we get back a compressed version of the data.
+      That could be a final answer or a part of a larger pipeline that feeds into other computations or a LLM  to reach a final answer.
+    </p>
+
+    <h1 id="transformSteps">Transform Steps</h1>
+    <p>
+      One of the key ideas behind this PoC is the generation of transform steps. The ideal properties of these steps:
+    </p>
+    <ul class="list-disc">
+      <li>
+        Can be robustly generated from a LLM - this means designed from the ground up to work with what LLM's do well.
+      </li>
+      <li>
+        Expressed as well formed JSON (or equivalent format) that can be used as input to computation
+      </li>
+      <li>Steps are expressive enough to achieve the intended outcome</li>
+    </ul>
+    <p>
+      The set of rules define what operations can be performed, they could be a pure extraction machine, or any set of operations the author wants to provide to the user.  There is an open question between the complexity of operations and ultimate performance.  A most optimal set of rules is open question.
+    </p>
+    <br />
+    <p>
+      Below are the transform steps generated from asking the question
+      <strong>
+        "Can you get me content from the 60s with rating higher than 7 with London in the title"
+      </strong>
+      to the IMDB table.
+    </p>
+    <div class="bg-gray-800 p-4 rounded-lg mt-4">
+      <pre class="text-gray-100 font-mono text-sm overflow-x-auto">
+        <%= Jason.encode_to_iodata!([
+          %{
+            column_index: 6,
+            column_type: "int",
+            from: 1960,
+            method: "fillter_row_by_range",
+            to: 1969
+          },
+          %{
+            column_index: 4,
+            column_type: "float",
+            from: 7,
+            method: "fillter_row_by_range",
+            to: nil
+          },
+          %{filters: ["London"], method: "filter_row", row_index: 1}
+        ], pretty: true) %>
+      </pre>
+    </div>
+    <br />
+    <p>
+      This list of steps is passed to a transform engine along with the data to produce a result. This meaning the same steps are applied no matter the size of the data.
+    </p>
+    <h1 id="semanticExpansion">Semantic Expansion</h1>
+    <p>
+      One of the surprising moments for me when designing this PoC, when inspecting the generated steps, was something I call semantic expansion. This is using the knowledge of the LLM to better answer ambiguous questions.
+      For example, having a customer table with country of origin, but we want to know something that is not explicitly in the data, such as the idea of Europe.  The LLM can expand Europe into a list of countries.
+    </p>
+    <h1 id="errorCorrection">Error Correction</h1>
+    <p>
+      As part of the transform steps we ask the LLM to imply the type of the data (int, date, etc).  Using this information we can then attempt to convert the data into that type. We can extract all values that cannot be converted (due to bad formatting) these values can be fed back to the LLM to correct the formatting errors, correcting the data.
+    </p>
+    <br />
+    <code>
+      [
+      "2020-02-25 - on a thursday",
+      "25-02-2020",
+      "1st October, 2022",
+      "11/11/24",
+      "Thursday, 25th February 2021",
+      "2020-02-25"
+      ] => [
+      "2020-02-25",
+      "2020-02-25",
+      "2022-10-01",
+      "2024-11-11",
+      "2021-02-25",
+      "2020-02-25"
+      ]
+    </code>
+    <h1 id="LLMDrawback">Why not just use a LLM?</h1>
+    <p>
+      While Large Language Models are increasingly capable of handling larger datasets and performing complex analyses, there are several fundamental limitations that make a hybrid approach more practical, advantages over using a LLM directly:
+    </p>
+    <br />
+    <div class="point">
+      <h4>1. Computational Efficiency</h4>
+      <ul class="list-disc">
+        <li>
+          LLMs process entire datasets token by token, making them inefficient for large-scale data operations
+        </li>
+        <li>
+          A single query on a million-row dataset could cost hundreds of dollars in API fees
+        </li>
+        <li>
+          Traditional computational methods (like indexed searches) are orders of magnitude faster
+        </li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>2. Reliability and Reproducibility</h4>
+      <ul class="list-disc">
+        <li>
+          LLMs are inherently probabilistic, potentially giving different answers to the same question
+        </li>
+        <li>
+          The transformation steps approach generates deterministic operations that can be verified and will always produce the same results
+        </li>
+        <li>Error handling becomes explicit rather than hidden in the LLM's black box</li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>3. Resource Management</h4>
+      <ul class="list-disc">
+        <li>Context window limitations still exist even in modern LLMs</li>
+        <li>
+          Processing large datasets requires chunking and managing complex prompt engineering
+        </li>
+        <li>Our approach maintains constant LLM resource usage regardless of dataset size</li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>4. Debugging and Maintenance</h4>
+      <ul class="list-disc">
+        <li>When an LLM makes a mistake, it's often unclear why or how to fix it</li>
+        <li>
+          With transformation steps, each operation is explicit and can be individually tested
+        </li>
+        <li>The system can be gradually improved by refining the step generation process</li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>5. Caching and Optimization</h4>
+      <ul class="list-disc">
+        <li>Similar queries can reuse cached transformation steps</li>
+        <li>Common patterns can be optimized without requiring new LLM calls</li>
+        <li>Intermediate results can be stored and reused</li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>6. Data Privacy and Security</h4>
+      <ul class="list-disc">
+        <li>Direct LLM use requires sending entire datasets to external APIs</li>
+        <li>Our approach only shares metadata and transformation logic</li>
+        <li>Sensitive data remains within your computational environment</li>
+      </ul>
+    </div>
+
+    <div class="point">
+      <h4>7. Cost Scaling</h4>
+      <ul class="list-disc">
+        <li>LLM API costs scale with dataset size</li>
+        <li>In our approach, LLM costs remain constant regardless of data volume</li>
+        <li>
+          Computation costs scale linearly with traditional optimization techniques available
+        </li>
+      </ul>
+    </div>
+
+    <p>Side by Side comparison GPT-4o vs TableAI:</p>
+    <img src="/images/ChatGPT-4o_IMDB_results.png" />
+    <img src="/images/TableAI_IMDB_results.png" />
+
+    <h1>FaQs</h1>
+    <h2 id="NLQuery">Example of natural language queries</h2>
+    <code>
+      "Can you get me films from the 60s with rating higher than 7 with London in the title"<br />
+      "Can I get name and email from the last 5 customers from Europe"<br />
+      "Can you get me all the info for customers who joined between 2021 and 2023"<br />
+    </code>
+    <h2 id="FaQTable">Example table from IMDB data</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Type</th>
+          <th>Genres</th>
+          <th>Rating</th>
+          <th>Votes</th>
+          <th>Year</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>tt0000009</td>
+          <td>Miss Jerry</td>
+          <td>movie</td>
+          <td>Romance</td>
+          <td class="rating">5.4</td>
+          <td class="votes">215</td>
+          <td>1894</td>
+        </tr>
+        <tr>
+          <td>tt0000147</td>
+          <td>The Corbett-Fitzsimmons Fight</td>
+          <td>movie</td>
+          <td>Documentary, News, Sport</td>
+          <td class="rating">5.2</td>
+          <td class="votes">539</td>
+          <td>1897</td>
+        </tr>
+        <tr>
+          <td>tt0000502</td>
+          <td>Bohemios</td>
+          <td>movie</td>
+          <td></td>
+          <td class="rating">4.4</td>
+          <td class="votes">18</td>
+          <td>1905</td>
+        </tr>
+        <tr>
+          <td>tt0000574</td>
+          <td>The Story of the Kelly Gang</td>
+          <td>movie</td>
+          <td>Action, Adventure, Biography</td>
+          <td class="rating">6.0</td>
+          <td class="votes">941</td>
+          <td>1906</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Why not use SQL?</h2>
+    <p>
+      SQL is powerful but requires technical expertise and a proper database setup. This approach offers several advantages:
+    </p>
+    <ol class="list-decimal">
+      <li>Natural language accessibility - users don't need to learn SQL syntax</li>
+      <li>Works directly with raw data files without database setup</li>
+      <li>Handles messy or inconsistent data through LLM-assisted cleaning</li>
+      <li>
+        Provides semantic understanding (like automatically knowing European countries) that SQL alone cannot provide
+      </li>
+      <li>Can work with data sources that aren't easily imported into SQL databases</li>
+    </ol>
+
+    <h2>How is this different from ToolFormer / Tool use?</h2>
+    <p>
+      While both approaches involve LLMs interacting with tools, this system is distinct because:
+    </p>
+    <ol class="list-decimal">
+      <li>It generates transformation steps rather than directly executing commands</li>
+      <li>The steps are composable and reusable</li>
+      <li>
+        It separates the "thinking" phase (LLM generating steps) from the "execution" phase (computing on data)
+      </li>
+      <li>
+        It can handle arbitrary-sized datasets since the LLM only sees metadata and generates instructions
+      </li>
+      <li>The transformation steps can be cached and optimized, unlike direct tool calls</li>
+    </ol>
+
+    <h2>What about data privacy and security?</h2>
+    <p>
+      Since the LLM only sees metadata and sample problematic rows (not the full dataset), this approach can be more privacy-preserving than sending entire datasets to an LLM. The actual computation happens locally or in your secure environment.
+    </p>
+
+    <h2>How does it handle ambiguous queries?</h2>
+    <p>The system can:</p>
+    <ol class="list-decimal">
+      <li>Generate clarifying steps when needed</li>
+      <li>
+        Use semantic understanding to expand ambiguous terms (like "Europe" → list of countries)
+      </li>
+      <li>Return multiple possible interpretations of the query for user confirmation</li>
+      <li>Include validation steps in the transformation pipeline</li>
+    </ol>
+
+    <h2>What are the performance implications?</h2>
+    <p>The hybrid approach offers several performance benefits:</p>
+    <ol class="list-decimal">
+      <li>Only calls the LLM once to generate steps, not for processing data</li>
+      <li>Can cache commonly used transformation patterns</li>
+      <li>Executes computations using efficient data processing libraries</li>
+      <li>Scales linearly with data size since LLM involvement is constant</li>
+    </ol>
+
+    <h2>How reliable are the generated transformations?</h2>
+    <p>The system improves reliability by:</p>
+    <ol class="list-decimal">
+      <li>Using predefined step types that are known to work</li>
+      <li>Allowing validation and testing of steps before execution</li>
+      <li>Providing error correction for data quality issues</li>
+      <li>Enabling human review of generated steps when needed</li>
+      <li>Supporting iterative refinement of problematic transformations</li>
+    </ol>
+
+    <h2>What about maintaining and debugging?</h2>
+    <p>The transformation steps provide several advantages for maintenance:</p>
+    <ol class="list-decimal">
+      <li>Steps are explicit and can be logged</li>
+      <li>Each step can be tested independently</li>
+      <li>Problems can be isolated to specific transformations</li>
+      <li>Steps can be version controlled and reviewed</li>
+      <li>The system can generate documentation for the transformations</li>
+    </ol>
+
+    <h2>How does it handle complex data relationships?</h2>
+    <p>Based on the metadata, the system can:</p>
+    <ol class="list-decimal">
+      <li>Understand relationships between different data sources</li>
+      <li>Generate appropriate join operations</li>
+      <li>Maintain data integrity through the transformation pipeline</li>
+      <li>Handle nested and hierarchical data structures</li>
+    </ol>
+
+    <h1>Future work</h1>
+    <ul class="list-disc">
+      <li>
+        <strong>Fine-tuning:</strong>
+        We currently use off-the-shelf base models. Training a model specifically for this task might
+        yield even better, more reliable transformation steps.
+      </li>
+      <li>
+        <strong>Optimized Instructions:</strong>
+        Right now, we have a small set of rules. There’s an opportunity to refine these instructions
+        to produce more robust and complex transformations.
+      </li>
+      <li>
+        <strong>Other Domains:</strong>
+        This approach isn’t limited to tables. Anywhere you have structured or semi-structured data—like logs
+        or certain configuration formats—you could potentially apply the same pattern.
+      </li>
+    </ul>
+  </div>
+  <footer class="bg-gray-800 text-gray-300">
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      If you have got this far and find it interesting, please get in touch:
+      <a
+        href="https://x.com/TJCBerman"
+        class="underline text-blue-600 hover:text-blue-800 visited:text-purple-600"
+        target="_blank"
+      >
+        @TJCBerman
+      </a>
+      <p>Published on 17/12/2024</p>
+    </div>
+  </footer>
+</div>
