@@ -2,17 +2,19 @@ defmodule TableAi.FlowProcessing.FlowCsv do
   def run do
     path = "priv/static/uploads/imdb"
     process_file(path, steps())
-    # IO.inspect(System.schedulers_online())
   end
 
   def process_file(filename, steps) do
     # Get number of available cores
+    total_lines = File.stream!(filename) |> Enum.count()
     pool_size = System.schedulers_online()
+
+    max_demand = div(total_lines, pool_size)
 
     filename
     |> File.stream!([], :line)
     |> CSV.decode!()
-    |> Flow.from_enumerable(max_demand: 10000, stages: pool_size)
+    |> Flow.from_enumerable(max_demand: max_demand, stages: pool_size)
     # |> Flow.partition(stages: pool_size)
     |> Flow.map_batch(fn rows ->
       # Your row processing logic here
@@ -23,13 +25,6 @@ defmodule TableAi.FlowProcessing.FlowCsv do
       [row | acc]
     end)
     |> Enum.to_list()
-    |> IO.inspect(label: "Results")
-
-    # |> Enum.to_list()
-
-    # |> List.flatten()
-
-    "Done"
   end
 
   defp process_row(rows, steps) do
@@ -51,7 +46,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "column_type" => "int",
         "from" => 1960,
         "method" => "fillter_row_by_range",
-        "to" => 1969
+        "to" => 1979
       },
       %{
         "column_index" => 4,
