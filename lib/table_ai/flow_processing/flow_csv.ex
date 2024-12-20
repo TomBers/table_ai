@@ -19,7 +19,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
       |> Flow.from_enumerable(stages: pool_size)
       |> Flow.map_batch(fn rows ->
         df = TransformMachine.run_filters(steps, rows) |> Enum.to_list()
-        errors = FixErrors.get_errors(steps, rows)
+        errors = FixErrors.get_errors(steps, df)
 
         if length(df) > 0 do
           [%{data: df, errors: errors}]
