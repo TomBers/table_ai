@@ -1,6 +1,6 @@
 defmodule TableAi.NlpExtract.TransformSteps do
   def example_steps(file_name) do
-    IO.inspect(file_name)
+    # IO.inspect(file_name)
 
     case file_name do
       "imdb" -> TableAi.NlpExtract.PastSteps.imdb()
