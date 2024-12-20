@@ -53,9 +53,11 @@ defmodule TableAiWeb.TableLive do
     {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
   end
 
-  def handle_info({:rows, rows}, socket) do
+  def handle_info({:rows, res}, socket) do
     # IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
-    {:noreply, socket |> assign(rows: socket.assigns.rows ++ rows)}
+    rows = Map.get(res, :data, [])
+    errors = Map.get(res, :errors, [])
+    {:noreply, socket |> assign(rows: rows, errors: errors)}
   end
 
   def row_string(rows) do

@@ -1,8 +1,6 @@
 <.simple_form for={@form} phx-submit="save" phx-change="edit">
   <.input name="query" value="" id={@query_id} label="Enter your question" />
 </.simple_form>
-<.link href={~p"/file/#{@file_name}"}>View File</.link>
-<br />
 <br />
 
 <%= if length(@nlp_query.errors) > 0 do %>

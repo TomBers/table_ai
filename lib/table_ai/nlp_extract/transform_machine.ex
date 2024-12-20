@@ -4,18 +4,9 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def emit_results(query, pid) do
-    run_filters(query.steps, query.df)
-    |> Stream.chunk_every(500)
-    |> Stream.each(fn rows ->
-      formatted_rows =
-        Enum.map(rows, fn row ->
-          row
-          |> Enum.to_list()
-        end)
+    formatted_rows = TableAi.FlowProcessing.FlowCsv.process_file(query.file_path, query.steps)
 
-      send(pid, {:rows, formatted_rows})
-    end)
-    |> Stream.run()
+    send(pid, {:rows, formatted_rows})
   end
 
   def run_filters(res, df) do
