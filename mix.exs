@@ -60,7 +60,8 @@ defmodule TableAi.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:openai_ex, "~> 0.8.4"},
-      {:csv, "~> 3.0"}
+      {:csv, "~> 3.0"},
+      {:flow, "~> 1.2"}
     ]
   end
 

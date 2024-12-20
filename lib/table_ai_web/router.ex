@@ -20,7 +20,7 @@ defmodule TableAiWeb.Router do
     get "/", PageController, :home
     # live "/", HomeLive
     # live "/file_upload", FileUploadLive
-    # live "/talk/uploads/:path", TableLive
+    live "/talk/uploads/:path", TableLive
     # live "/file/:path", FileLive
   end
 
