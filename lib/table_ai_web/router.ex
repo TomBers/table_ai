@@ -17,7 +17,8 @@ defmodule TableAiWeb.Router do
   scope "/", TableAiWeb do
     pipe_through :browser
 
-    live "/", HomeLive
+    get "/", PageController, :home
+    # live "/", HomeLive
     # live "/file_upload", FileUploadLive
     # live "/talk/uploads/:path", TableLive
     # live "/file/:path", FileLive
