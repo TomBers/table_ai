@@ -10,7 +10,7 @@ body {
     line-height: 1.6;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0px;
 }
 
 h1 {
@@ -46,6 +46,7 @@ table {
         system-ui,
         -apple-system,
         sans-serif;
+    text-transform: capitalize;
 }
 
 th {

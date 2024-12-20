@@ -202,7 +202,7 @@ defmodule TableAiWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white">
+      <div class="mt-4 space-y-8 bg-white">
         <%= render_slot(@inner_block, f) %>
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           <%= render_slot(action, f) %>
@@ -377,7 +377,7 @@ defmodule TableAiWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
         ]}
@@ -546,9 +546,10 @@ defmodule TableAiWeb.CoreComponents do
 
     ~H"""
     <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-11 sm:w-full">
+      <table class="w-[40rem] mt-4 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
+            <th :if={@rows != []} class="p-0 pb-4 pr-6 font-normal">Index</th>
             <th :for={col <- @cols} class="p-0 pb-4 pr-6 font-normal"><%= col %></th>
             <th :if={@action != []} class="relative p-0 pb-4">
               <span class="sr-only"><%= gettext("Actions") %></span>
@@ -560,7 +561,12 @@ defmodule TableAiWeb.CoreComponents do
           phx-update={match?(%Phoenix.LiveView.LiveStream{}, @rows) && "stream"}
           class="relative divide-y divide-zinc-100 border-t border-zinc-200 text-sm leading-6 text-zinc-700"
         >
-          <tr :for={row <- @rows} id={@row_id && @row_id.(row)} class="group hover:bg-zinc-50">
+          <tr
+            :for={{row, indx} <- Enum.with_index(@rows)}
+            id={@row_id && @row_id.(row)}
+            class="group hover:bg-zinc-50"
+          >
+            <td class="relative p-0"><%= indx + 1 %></td>
             <td
               :for={{col, i} <- Enum.with_index(@cols)}
               phx-click={@row_click && @row_click.(row)}
