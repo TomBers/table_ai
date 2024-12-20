@@ -3,8 +3,10 @@ defmodule TableAi.FlowProcessing.FlowCsv do
   alias TableAi.DataFix.FixErrors
 
   def run do
-    path = "priv/static/uploads/imdb"
-    process_file(path, steps())
+    # path = "priv/static/uploads/imdb"
+    # process_file(path, imdb_steps())
+    path = "priv/static/uploads/error_correct"
+    process_file(path, error_steps())
   end
 
   def process_file(filename, steps) do
@@ -19,7 +21,9 @@ defmodule TableAi.FlowProcessing.FlowCsv do
       |> Flow.from_enumerable(stages: pool_size)
       |> Flow.map_batch(fn rows ->
         df = TransformMachine.run_filters(steps, rows) |> Enum.to_list()
-        errors = FixErrors.get_errors(steps, df)
+        # TODO - the errors need to look at the whole data set, this needs more testing
+        # Check what the errors return.
+        errors = FixErrors.get_errors(steps, rows)
 
         if length(df) > 0 do
           [%{data: df, errors: errors}]
@@ -38,7 +42,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
     }
   end
 
-  def steps do
+  def imdb_steps do
     [
       %{
         "column_index" => 6,
@@ -55,6 +59,18 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "to" => nil
       },
       %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}
+    ]
+  end
+
+  def error_steps do
+    [
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "from" => "2022-01-01",
+        "method" => "fillter_row_by_range",
+        "to" => "2023-01-01"
+      }
     ]
   end
 end
