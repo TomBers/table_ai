@@ -10,8 +10,8 @@ defmodule TableAi.FlowProcessing.FlowCsv do
   end
 
   def process_file(filename, steps, fixed_errors \\ []) do
-    # Get number of available cores
     # total_lines = File.stream!(filename) |> Enum.count()
+    # Get number of available cores
     pool_size = System.schedulers_online()
 
     result =
@@ -21,17 +21,19 @@ defmodule TableAi.FlowProcessing.FlowCsv do
       |> Flow.from_enumerable(stages: pool_size)
       |> Flow.map_batch(fn rows ->
         fixed_rows =
-          if fixed_errors do
-            TransformMachine.fix_errors(fixed_errors, rows)
-          else
-            rows
+          case fixed_errors do
+            [] -> rows
+            _ -> TransformMachine.fix_errors(fixed_errors, rows)
           end
 
         dataframe = TransformMachine.run_filters(steps, fixed_rows) |> Enum.to_list()
 
         errors = FixErrors.get_errors(steps, fixed_rows)
 
-        if(dataframe, do: [%{data: dataframe, errors: errors}], else: [])
+        case dataframe do
+          [] -> []
+          _ -> [%{data: dataframe, errors: errors}]
+        end
       end)
       |> Flow.reduce(fn -> [] end, fn row, acc ->
         [row | acc]
