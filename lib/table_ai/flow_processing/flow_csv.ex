@@ -6,10 +6,10 @@ defmodule TableAi.FlowProcessing.FlowCsv do
     # path = "priv/static/uploads/imdb"
     # process_file(path, imdb_steps())
     path = "priv/static/uploads/error_correct"
-    process_file(path, error_steps())
+    process_file(path, error_steps(), fixed_errors())
   end
 
-  def process_file(filename, steps) do
+  def process_file(filename, steps, fixed_errors \\ []) do
     # Get number of available cores
     # total_lines = File.stream!(filename) |> Enum.count()
     pool_size = System.schedulers_online()
@@ -20,16 +20,18 @@ defmodule TableAi.FlowProcessing.FlowCsv do
       |> CSV.decode!()
       |> Flow.from_enumerable(stages: pool_size)
       |> Flow.map_batch(fn rows ->
-        df = TransformMachine.run_filters(steps, rows) |> Enum.to_list()
-        # TODO - the errors need to look at the whole data set, this needs more testing
-        # Check what the errors return.
-        errors = FixErrors.get_errors(steps, rows)
+        fixed_rows =
+          if fixed_errors do
+            TransformMachine.fix_errors(fixed_errors, rows)
+          else
+            rows
+          end
 
-        if length(df) > 0 do
-          [%{data: df, errors: errors}]
-        else
-          []
-        end
+        dataframe = TransformMachine.run_filters(steps, fixed_rows) |> Enum.to_list()
+
+        errors = FixErrors.get_errors(steps, fixed_rows)
+
+        if(dataframe, do: [%{data: dataframe, errors: errors}], else: [])
       end)
       |> Flow.reduce(fn -> [] end, fn row, acc ->
         [row | acc]
@@ -71,6 +73,14 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "method" => "fillter_row_by_range",
         "to" => "2023-01-01"
       }
+    ]
+  end
+
+  def fixed_errors do
+    [
+      %{"column_index" => 10, "fixed_data" => "2024-03-25", "row_index" => 3},
+      %{"column_index" => 10, "fixed_data" => "2025-01-17", "row_index" => 10},
+      %{"column_index" => 10, "fixed_data" => "2025-06-07", "row_index" => 92}
     ]
   end
 end
