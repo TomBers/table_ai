@@ -9,26 +9,27 @@ defmodule TableAiWeb.TableLive do
     path =
       Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(file_name))
 
-    nlp_query = %TableAi.Structs.NLPQuery{}
+    nlp_query = %TableAi.Structs.NLPQuery{file_path: path, file_name: file_name}
 
     {:ok,
      socket
      |> assign(
        form: %{},
-       path: path,
-       file_name: file_name,
        rows: [],
        nlp_query: nlp_query,
        query_id: UUID.generate()
      )}
   end
 
-  def handle_event("save", %{"query" => query}, socket) do
-    IO.inspect(query, label: "User Query")
+  def handle_event("save", %{"query" => user_query}, socket) do
+    # IO.inspect(user_query, label: "User Query")
     pid = self()
 
     nlp_query =
-      TableAi.Interface.gen_rows(socket.assigns.path, query, pid, socket.assigns.file_name)
+      TableAi.Interface.gen_rows(
+        %{socket.assigns.nlp_query | user_query: user_query},
+        pid
+      )
 
     # query_id: UUID.generate()
     {:noreply,
@@ -40,27 +41,24 @@ defmodule TableAiWeb.TableLive do
     {:noreply, socket |> assign(rows: [])}
   end
 
-  def handle_event("skip", _params, socket) do
-    pid = self()
-    TableAi.Interface.emit_results(socket.assigns.nlp_query, pid)
-    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
-  end
-
   def handle_event("autofix", _params, socket) do
     pid = self()
-    TableAi.Interface.fix_errors(socket.assigns.nlp_query, pid)
+    error_fixes = TableAi.DataFix.FixErrors.error_fix(socket.assigns.nlp_query)
+    # IO.inspect(error_fixes, label: "Error Fixes")
+    TableAi.NlpExtract.TransformMachine.emit_results(socket.assigns.nlp_query, pid, error_fixes)
 
-    {:noreply, socket |> assign(nlp_query: %{socket.assigns.nlp_query | errors: []})}
+    # query_id: UUID.generate()
+    {:noreply, socket}
   end
 
   def handle_info({:rows, res}, socket) do
     # IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
     rows = Map.get(res, :data, [])
     errors = Map.get(res, :errors, [])
-    {:noreply, socket |> assign(rows: rows, errors: errors)}
-  end
 
-  def row_string(rows) do
-    "Rows: #{Enum.count(rows)}"
+    # IO.inspect(errors, label: "Errors")
+
+    {:noreply,
+     socket |> assign(rows: rows, nlp_query: %{socket.assigns.nlp_query | errors: errors})}
   end
 end

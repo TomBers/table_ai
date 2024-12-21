@@ -5,23 +5,23 @@ defmodule TableAi.Interface do
 
   @use_test_data Application.compile_env(:table_ai, :use_test_data)
 
-  def gen_rows(file_path, query, pid, file_name \\ nil) do
+  def gen_rows(query, pid) do
     # 1_031_289
     imdb_length = 2
-    df = DataLoader.file(file_path, imdb_length)
+    df = DataLoader.file(query.file_path, imdb_length)
 
     columns = Enum.take(df, 1) |> Enum.at(0)
     # First row seems to make the results worse
     # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
 
     prompt =
-      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question ```#{query}```."
+      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question ```#{query.user_query}```."
 
     # IO.inspect(prompt, label: "Prompt")
 
     res =
       if @use_test_data do
-        TransformSteps.example_steps(file_name)
+        TransformSteps.example_steps(query.file_name)
       else
         instructions = SystemInstruction.get()
         {:ok, steps} = LlmInterface.get(prompt, instructions)
@@ -30,7 +30,7 @@ defmodule TableAi.Interface do
 
     query = %NLPQuery{
       df: df,
-      file_path: file_path,
+      file_path: query.file_path,
       headers: TransformSteps.get_headers(res, columns),
       steps: res,
       errors: []

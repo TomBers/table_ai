@@ -4,6 +4,7 @@ defmodule TableAi.NlpExtract.TransformSteps do
 
     case file_name do
       "imdb" -> TableAi.NlpExtract.PastSteps.imdb()
+      "error_correct" -> TableAi.NlpExtract.PastSteps.date_range()
       _ -> TableAi.NlpExtract.PastSteps.limit()
     end
 
