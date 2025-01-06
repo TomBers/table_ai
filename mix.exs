@@ -19,7 +19,7 @@ defmodule TableAi.MixProject do
   def application do
     [
       mod: {TableAi.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :observer, :wx]
     ]
   end
 

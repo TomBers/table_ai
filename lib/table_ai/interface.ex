@@ -10,6 +10,7 @@ defmodule TableAi.Interface do
     imdb_length = 2
     df = DataLoader.file(query.file_path, imdb_length)
 
+    # This is just grabbing the headers from the CSV
     columns = Enum.take(df, 1) |> Enum.at(0)
     # First row seems to make the results worse
     # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
@@ -28,12 +29,13 @@ defmodule TableAi.Interface do
         steps
       end
 
-    query = %NLPQuery{
-      df: df,
-      file_path: query.file_path,
-      headers: TransformSteps.get_headers(res, columns),
-      steps: res,
-      errors: []
+    query = %{
+      query
+      | df: df,
+        file_path: query.file_path,
+        headers: TransformSteps.get_headers(res, columns),
+        steps: res,
+        errors: []
     }
 
     TransformMachine.emit_results(query, pid)

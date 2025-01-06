@@ -25,16 +25,15 @@ defmodule TableAiWeb.TableLive do
     # IO.inspect(user_query, label: "User Query")
     pid = self()
 
+    q = TableAi.Structs.NLPQuery.reset_query(socket.assigns.nlp_query, user_query)
+
     nlp_query =
-      TableAi.Interface.gen_rows(
-        %{socket.assigns.nlp_query | user_query: user_query},
-        pid
-      )
+      TableAi.Interface.gen_rows(q, pid)
 
     # query_id: UUID.generate()
     {:noreply,
      socket
-     |> assign(nlp_query: nlp_query)}
+     |> assign(nlp_query: nlp_query, rows: [], errors: [])}
   end
 
   def handle_event("edit", _params, socket) do
@@ -58,7 +57,6 @@ defmodule TableAiWeb.TableLive do
 
     # IO.inspect(errors, label: "Errors")
 
-    {:noreply,
-     socket |> assign(rows: rows, nlp_query: %{socket.assigns.nlp_query | errors: errors})}
+    {:noreply, socket |> assign(rows: rows, nlp_query: socket.assigns.nlp_query, errors: errors)}
   end
 end
