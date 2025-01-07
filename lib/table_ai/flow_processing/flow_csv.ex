@@ -59,7 +59,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "column_index" => 4,
         "column_type" => "float",
         "from" => 7,
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => nil
       },
       %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}

@@ -129,15 +129,15 @@ defmodule TableAi.OpenaiInterface do
                   },
                   row_index: %{type: "integer", description: "The index of the row"}
                 },
-                # required: [
-                #   "method"
-                #   # "column_index",
-                #   # "row_index",
-                #   # "column_type",
-                #   # "from",
-                #   # "to",
-                #   # "filters"
-                # ],
+                required: [
+                  "method"
+                  #   # "column_index",
+                  #   # "row_index",
+                  #   # "column_type",
+                  #   # "from",
+                  #   # "to",
+                  #   # "filters"
+                ],
                 additionalProperties: false
               }
             }
