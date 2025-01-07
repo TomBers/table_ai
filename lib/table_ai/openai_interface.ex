@@ -18,7 +18,6 @@ defmodule TableAi.OpenaiInterface do
       response_format: %{
         type: "json_schema",
         json_schema: %{
-          name: "math_reasoning",
           schema: %{
             type: "object",
             properties: %{
@@ -27,16 +26,40 @@ defmodule TableAi.OpenaiInterface do
                 items: %{
                   type: "object",
                   properties: %{
-                    explanation: %{type: "string"},
-                    output: %{type: "string"}
+                    method: %{
+                      type: "string",
+                      description: "The method to apply to the data.",
+                      enum: [
+                        "fillter_row_by_range",
+                        "filter_row",
+                        "filter_column",
+                        "limit"
+                      ]
+                    },
+                    column_type: %{
+                      type: "anyOf",
+                      description:
+                        "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float']."
+                    },
+                    column_index: %{
+                      type: "integer",
+                      description: "The index of the column to apply the filter on."
+                    },
+                    from: %{type: "anyOf", description: "The start for the filter."},
+                    to: %{type: "anyOf", description: "The end for the filter."},
+                    filters: %{
+                      type: "array",
+                      items: %{type: "anyOf"},
+                      description: "The list of values to filter by."
+                    },
+                    row_index: %{type: "integer", description: "The index of the row"}
                   },
-                  required: ["explanation", "output"],
+                  required: ["method"],
                   additionalProperties: false
                 }
-              },
-              final_answer: %{type: "string"}
+              }
             },
-            required: ["steps", "final_answer"],
+            required: ["steps"],
             additionalProperties: false
           },
           strict: true
