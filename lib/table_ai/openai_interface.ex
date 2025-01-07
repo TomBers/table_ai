@@ -1,70 +1,41 @@
 defmodule TableAi.OpenaiInterface do
-  def solve_math_problem do
-    url = "https://api.openai.com/v1/chat/completions"
+  alias TableAi.NlpExtract.SystemInstruction
 
-    body = %{
-      model: "gpt-4o-2024-08-06",
-      messages: [
-        %{
-          role: "system",
-          content:
-            "You are a helpful math tutor. Guide the user through the solution step by step."
-        },
-        %{
-          role: "user",
-          content: "how can I solve 8x + 7 = -23"
-        }
-      ],
-      response_format: %{
-        type: "json_schema",
-        json_schema: %{
-          schema: %{
-            type: "object",
-            properties: %{
-              steps: %{
-                type: "array",
-                items: %{
-                  type: "object",
-                  properties: %{
-                    method: %{
-                      type: "string",
-                      description: "The method to apply to the data.",
-                      enum: [
-                        "fillter_row_by_range",
-                        "filter_row",
-                        "filter_column",
-                        "limit"
-                      ]
-                    },
-                    column_type: %{
-                      type: "anyOf",
-                      description:
-                        "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float']."
-                    },
-                    column_index: %{
-                      type: "integer",
-                      description: "The index of the column to apply the filter on."
-                    },
-                    from: %{type: "anyOf", description: "The start for the filter."},
-                    to: %{type: "anyOf", description: "The end for the filter."},
-                    filters: %{
-                      type: "array",
-                      items: %{type: "anyOf"},
-                      description: "The list of values to filter by."
-                    },
-                    row_index: %{type: "integer", description: "The index of the row"}
-                  },
-                  required: ["method"],
-                  additionalProperties: false
-                }
-              }
-            },
-            required: ["steps"],
-            additionalProperties: false
-          },
-          strict: true
-        }
+  @url "https://api.openai.com/v1/chat/completions"
+  @model "gpt-4o-2024-08-06"
+
+  def test do
+    prompt =
+      "I have a spreadsheet with columns [id, title, type, genres, averageRating, numVotes, releaseYear] and the question ```Can you get me content from the 60s with rating higher than 7 with London in the title```."
+
+    run(prompt)
+  end
+
+  def run(prompt) do
+    transform_instructions = SystemInstruction.get()
+
+    get_massages(prompt, transform_instructions)
+    |> make_req()
+  end
+
+  def get_massages(prompt, transform_instructions) do
+    [
+      %{
+        "role" => "developer",
+        "content" => transform_instructions
+      },
+      %{
+        "role" => "user",
+        "content" => prompt
       }
+    ]
+  end
+
+  def make_req(messages) do
+    body = %{
+      model: @model,
+      messages: messages,
+      response_format: response_format()
     }
 
     headers = [
@@ -72,9 +43,75 @@ defmodule TableAi.OpenaiInterface do
       {"Content-Type", "application/json"}
     ]
 
-    Req.post!(url,
+    Req.post!(@url,
       headers: headers,
       json: body
     )
+  end
+
+  def response_format do
+    %{
+      type: "json_schema",
+      json_schema: %{
+        name: "transformation_steps",
+        schema: %{
+          type: "object",
+          properties: %{
+            steps: %{
+              type: "array",
+              items: %{
+                type: "object",
+                properties: %{
+                  method: %{
+                    type: "string",
+                    description: "The method to apply to the data.",
+                    enum: [
+                      "filter_row_by_range",
+                      "filter_row",
+                      "filter_column",
+                      "limit"
+                    ]
+                  },
+                  column_type: %{
+                    type: "string",
+                    description:
+                      "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].",
+                    enum: ["date", "timestamp", "int", "string", "float"]
+                  },
+                  column_index: %{
+                    type: "integer",
+                    description: "The index of the column to apply the filter on."
+                  },
+                  from: %{
+                    type: "string",
+                    description: "The lower bound for the filter."
+                  },
+                  to: %{type: "string", description: "The upper bound for the filter."},
+                  filters: %{
+                    type: "array",
+                    items: %{type: "string"},
+                    description: "The list of values to filter by."
+                  },
+                  row_index: %{type: "integer", description: "The index of the row"}
+                },
+                required: [
+                  "method",
+                  "column_index",
+                  "row_index",
+                  "column_type",
+                  "from",
+                  "to",
+                  "filters"
+                ],
+                additionalProperties: false
+              }
+            }
+          },
+          required: ["steps"],
+          additionalProperties: false
+        },
+        strict: true
+      }
+    }
   end
 end

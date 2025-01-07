@@ -18,7 +18,7 @@ defmodule TableAi.Interface do
     prompt =
       "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question ```#{query.user_query}```."
 
-    # IO.inspect(prompt, label: "Prompt")
+    IO.inspect(prompt, label: "Prompt")
 
     res =
       if @use_test_data do
