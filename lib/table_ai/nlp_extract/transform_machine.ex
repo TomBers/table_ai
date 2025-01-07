@@ -19,7 +19,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
             expanded_filters = expand_filters(res["filters"])
             acc |> filter_row(res["row_index"], expanded_filters)
 
-          %{"method" => "fillter_row_by_range"} ->
+          %{"method" => "filter_row_by_range"} ->
             case res["column_type"] do
               "date" ->
                 from_date = Date.from_iso8601!(res["from"])

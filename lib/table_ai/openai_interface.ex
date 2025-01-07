@@ -83,26 +83,61 @@ defmodule TableAi.OpenaiInterface do
                     description: "The index of the column to apply the filter on."
                   },
                   from: %{
-                    type: "string",
+                    anyOf: [
+                      %{
+                        type: "string"
+                      },
+                      %{
+                        type: "number"
+                      },
+                      %{
+                        type: "integer"
+                      }
+                    ],
                     description: "The lower bound for the filter."
                   },
-                  to: %{type: "string", description: "The upper bound for the filter."},
+                  to: %{
+                    anyOf: [
+                      %{
+                        type: "string"
+                      },
+                      %{
+                        type: "number"
+                      },
+                      %{
+                        type: "integer"
+                      }
+                    ],
+                    description: "The upper bound for the filter."
+                  },
                   filters: %{
                     type: "array",
-                    items: %{type: "string"},
+                    items: %{
+                      anyOf: [
+                        %{
+                          type: "string"
+                        },
+                        %{
+                          type: "number"
+                        },
+                        %{
+                          type: "integer"
+                        }
+                      ]
+                    },
                     description: "The list of values to filter by."
                   },
                   row_index: %{type: "integer", description: "The index of the row"}
                 },
-                required: [
-                  "method",
-                  "column_index",
-                  "row_index",
-                  "column_type",
-                  "from",
-                  "to",
-                  "filters"
-                ],
+                # required: [
+                #   "method"
+                #   # "column_index",
+                #   # "row_index",
+                #   # "column_type",
+                #   # "from",
+                #   # "to",
+                #   # "filters"
+                # ],
                 additionalProperties: false
               }
             }
@@ -110,7 +145,7 @@ defmodule TableAi.OpenaiInterface do
           required: ["steps"],
           additionalProperties: false
         },
-        strict: true
+        strict: false
       }
     }
   end

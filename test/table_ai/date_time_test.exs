@@ -14,7 +14,7 @@ defmodule TableAi.DateTimeTest do
         "column_index" => 12,
         "column_type" => "timestamp",
         "from" => "2024-11-23 12:00:00Z",
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => "2024-11-23 12:45:00Z"
       }
     ]

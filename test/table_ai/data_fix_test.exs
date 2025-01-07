@@ -17,7 +17,7 @@ defmodule DataFixTest do
         "column_index" => 10,
         "column_type" => "date",
         "from" => "2021-01-01",
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => "2023-01-01"
       }
     ]
@@ -41,7 +41,7 @@ defmodule DataFixTest do
 
     range_filter =
       Enum.find(res, fn step ->
-        step["method"] == "fillter_row_by_range" || step["method"] == "limit"
+        step["method"] == "filter_row_by_range" || step["method"] == "limit"
       end)
 
     errors =
@@ -73,7 +73,7 @@ defmodule DataFixTest do
 
     range_filter =
       Enum.find(res, fn step ->
-        step["method"] == "fillter_row_by_range" || step["method"] == "limit"
+        step["method"] == "filter_row_by_range" || step["method"] == "limit"
       end)
 
     errors =

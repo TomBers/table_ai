@@ -20,21 +20,24 @@ defmodule TableAi.Interface do
 
     IO.inspect(prompt, label: "Prompt")
 
-    res =
+    steps =
       if @use_test_data do
-        TransformSteps.example_steps(query.file_name)
+        OpenaiExtract.run()
+        # TransformSteps.example_steps(query.file_name)
       else
         instructions = SystemInstruction.get()
         {:ok, steps} = LlmInterface.get(prompt, instructions)
         steps
       end
 
+    IO.inspect(steps, label: "Steps")
+
     query = %{
       query
       | df: df,
         file_path: query.file_path,
-        headers: TransformSteps.get_headers(res, columns),
-        steps: res,
+        headers: TransformSteps.get_headers(steps, columns),
+        steps: steps,
         errors: []
     }
 

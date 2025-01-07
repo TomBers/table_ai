@@ -37,7 +37,7 @@ defmodule TableAi.DataFix.FixErrors do
   def get_errors(res, df) do
     range_filter =
       Enum.find(res, fn step ->
-        step["method"] == "fillter_row_by_range" || step["method"] == "limit"
+        step["method"] == "filter_row_by_range" || step["method"] == "limit"
       end)
 
     TransformMachine.get_errors(df, range_filter["column_index"], range_filter["column_type"])
