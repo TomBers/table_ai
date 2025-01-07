@@ -3,19 +3,11 @@ defmodule TableAi.NlpExtract.TransformMachine do
     run_filters(res, df) |> Enum.take(take) |> Enum.map(&Enum.to_list(&1))
   end
 
-  def emit_results(query, pid) do
-    run_filters(query.steps, query.df)
-    |> Stream.chunk_every(500)
-    |> Stream.each(fn rows ->
-      formatted_rows =
-        Enum.map(rows, fn row ->
-          row
-          |> Enum.to_list()
-        end)
+  def emit_results(query, pid, error_fixes \\ []) do
+    formatted_rows =
+      TableAi.FlowProcessing.FlowCsv.process_file(query.file_path, query.steps, error_fixes)
 
-      send(pid, {:rows, formatted_rows})
-    end)
-    |> Stream.run()
+    send(pid, {:rows, formatted_rows})
   end
 
   def run_filters(res, df) do
@@ -120,7 +112,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def order_by_column(data, column_index, ~c"int") do
-    IO.inspect("Order by Int")
+    # IO.inspect("Order by Int")
 
     data
     |> Enum.sort_by(
@@ -134,7 +126,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def order_by_column(data, column_index, ~c"float") do
-    IO.inspect("Order by Float")
+    # IO.inspect("Order by Float")
 
     data
     |> Enum.sort_by(
@@ -146,7 +138,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def order_by_column(data, column_index, column_type, order) do
-    IO.inspect(column_type, label: "Order by Col")
+    # IO.inspect(column_type, label: "Order by Col")
 
     data
     |> Enum.sort_by(
@@ -207,7 +199,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def filter_by_int(data, column_index, from_int, to_int) do
-    IO.inspect("Filter by Int")
+    # IO.inspect("Filter by Int")
 
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> Integer.parse() do
@@ -219,7 +211,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def filter_by_float(data, column_index, from_float, to_float) do
-    IO.inspect("Filter by Float")
+    # IO.inspect("Filter by Float")
 
     Stream.filter(data, fn row ->
       case Enum.at(row, column_index) |> Float.parse() do

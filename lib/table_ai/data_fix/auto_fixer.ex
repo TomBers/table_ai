@@ -11,6 +11,14 @@ defmodule TableAi.DataFix.AutoFixer do
     fixed_errors
   end
 
+  def error_correct(_errors) do
+    [
+      %{"column_index" => 10, "fixed_data" => "2024-03-25", "row_index" => 3},
+      %{"column_index" => 10, "fixed_data" => "2025-01-17", "row_index" => 10},
+      %{"column_index" => 10, "fixed_data" => "2025-06-07", "row_index" => 92}
+    ]
+  end
+
   def example_fixer(_errors) do
     [
       %{"column_index" => 10, "fixed_data" => "2024-03-25", "row_index" => 10},

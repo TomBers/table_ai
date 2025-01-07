@@ -1,0 +1,4 @@
+See - https://arrowsmithlabs.com/blog/iex-configure-auto-reload
+
+** May not be necessary, but I'm keeping it here for reference **
+git ls-files | entr mix compile
