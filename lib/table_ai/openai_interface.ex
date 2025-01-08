@@ -49,6 +49,145 @@ defmodule TableAi.OpenaiInterface do
     )
   end
 
+  def json_schema do
+    %{
+      type: "json_schema",
+      json_schema: %{
+        name: "transformation_steps",
+        schema: %{
+          type: "object",
+          properties: %{
+            steps: %{
+              type: "array",
+              items: %{
+                oneOf: [
+                  %{
+                    type: "object",
+                    properties: %{
+                      method: %{
+                        type: "string",
+                        description: "The method to apply to the data."
+                      },
+                      row_index: %{
+                        type: "integer",
+                        description: "The index of the row to apply the filter on."
+                      },
+                      filters: %{
+                        type: "array",
+                        items: %{
+                          type: "string",
+                          description: "The list of values to filter by."
+                        },
+                        description: "The list of values to filter by."
+                      }
+                    },
+                    required: ["method", "row_index", "filters"]
+                  },
+                  %{
+                    type: "object",
+                    properties: %{
+                      method: %{
+                        type: "string",
+                        description: "The method to apply to the data."
+                      },
+                      column_index: %{
+                        type: "integer",
+                        description: "The index of the column to apply the filter on."
+                      },
+                      column_type: %{
+                        type: "string",
+                        description:
+                          "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].",
+                        enum: ["date", "timestamp", "int", "string", "float"]
+                      },
+                      from: %{
+                        anyOf: [
+                          %{
+                            type: "string"
+                          },
+                          %{
+                            type: "number"
+                          },
+                          %{
+                            type: "integer"
+                          }
+                        ],
+                        description: "The start for the filter"
+                      },
+                      to: %{
+                        anyOf: [
+                          %{
+                            type: "string"
+                          },
+                          %{
+                            type: "number"
+                          },
+                          %{
+                            type: "integer"
+                          }
+                        ],
+                        description: "The end for the filter."
+                      }
+                    },
+                    required: ["method", "column_index", "column_type", "from", "to"]
+                  },
+                  %{
+                    type: "object",
+                    properties: %{
+                      method: %{
+                        type: "string",
+                        description: "The method to apply to the data."
+                      },
+                      columns: %{
+                        type: "array",
+                        items: %{
+                          type: "integer",
+                          description: "The indices of the columns to include."
+                        },
+                        description: "The indices of the columns to include."
+                      }
+                    },
+                    required: ["method", "columns"]
+                  },
+                  %{
+                    type: "object",
+                    properties: %{
+                      method: %{
+                        type: "string",
+                        description: "The method to apply to the data."
+                      },
+                      number: %{type: "integer", description: "The number of rows to return"},
+                      column_index: %{
+                        type: "integer",
+                        description: "The index of the column to apply the on."
+                      },
+                      column_type: %{
+                        type: "string",
+                        description:
+                          "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].",
+                        enum: ["date", "timestamp", "int", "string", "float"]
+                      },
+                      order: %{
+                        type: "string",
+                        description:
+                          "The order to sort the data. Can be one of ['asc' or 'desc'].",
+                        enum: ["asc", "desc"]
+                      }
+                    },
+                    required: ["method", "number", "column_index", "column_type", "order"]
+                  }
+                ],
+                required: ["steps"],
+                additionalProperties: false
+              },
+              strict: true
+            }
+          }
+        }
+      }
+    }
+  end
+
   def response_format do
     %{
       type: "json_schema",
