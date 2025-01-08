@@ -51,7 +51,7 @@ defmodule OpenaiExtract do
             "logprobs" => nil,
             "message" => %{
               "content" =>
-                "{\"steps\":[{\"method\":\"filter_row\",\"row_index\":1,\"filters\":[\"London\"]},{\"method\":\"filter_row_by_range\",\"column_index\":6,\"column_type\":\"int\",\"from\":1960,\"to\":1969},{\"method\":\"filter_row_by_range\",\"column_index\":4,\"column_type\":\"float\",\"from\":7,\"to\":10}]}",
+                "{\"steps\":[{\"method\":\"filter_row\",\"row_index\":1,\"filters\":[\"London\"]},{\"method\":\"filter_row_by_range\",\"column_index\":6,\"column_type\":\"int\",\"from\":1960,\"to\":1969},{\"method\":\"filter_row_by_range\",\"column_index\":4,\"column_type\":\"float\",\"from\":7.0,\"to\":10.0}]}",
               "refusal" => nil,
               "role" => "assistant"
             }
