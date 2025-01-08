@@ -3,6 +3,8 @@ defmodule TableAiWeb.TableLive do
   use TableAiWeb, :live_view
   import TableAiWeb.CoreComponents
 
+  require Logger
+
   def mount(params, _session, socket) do
     file_name = Map.get(params, "path", "customers-2000000.csv")
 
@@ -56,6 +58,7 @@ defmodule TableAiWeb.TableLive do
     errors = Map.get(res, :errors, [])
 
     # IO.inspect(errors, label: "Errors")
+    Logger.info("Rows: #{inspect(rows)}")
 
     {:noreply, socket |> assign(rows: rows, nlp_query: socket.assigns.nlp_query, errors: errors)}
   end

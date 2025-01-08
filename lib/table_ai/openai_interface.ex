@@ -66,8 +66,8 @@ defmodule TableAi.OpenaiInterface do
                     type: "string",
                     description: "The method to apply to the data.",
                     enum: [
-                      "filter_row_by_range",
                       "filter_row",
+                      "filter_row_by_range",
                       "filter_column",
                       "limit"
                     ]
@@ -94,7 +94,7 @@ defmodule TableAi.OpenaiInterface do
                         type: "integer"
                       }
                     ],
-                    description: "The lower bound for the filter."
+                    description: "The start for the filter"
                   },
                   to: %{
                     anyOf: [
@@ -108,26 +108,34 @@ defmodule TableAi.OpenaiInterface do
                         type: "integer"
                       }
                     ],
-                    description: "The upper bound for the filter."
+                    description: "The end for the filter."
+                  },
+                  columns: %{
+                    type: "array",
+                    items: %{
+                      type: "integer",
+                      description: "The indices of the columns to include."
+                    },
+                    description: "The indices of the columns to include."
                   },
                   filters: %{
                     type: "array",
                     items: %{
-                      anyOf: [
-                        %{
-                          type: "string"
-                        },
-                        %{
-                          type: "number"
-                        },
-                        %{
-                          type: "integer"
-                        }
-                      ]
+                      type: "string",
+                      description: "The list of values to filter by."
                     },
                     description: "The list of values to filter by."
                   },
-                  row_index: %{type: "integer", description: "The index of the row"}
+                  row_index: %{
+                    type: "integer",
+                    description: "The index of the row to apply the filter on."
+                  },
+                  number: %{type: "integer", description: "The number of rows to return"},
+                  order: %{
+                    type: "string",
+                    description: "The order to sort the data. Can be one of ['asc' or 'desc'].",
+                    enum: ["asc", "desc"]
+                  }
                 },
                 required: [
                   "method"

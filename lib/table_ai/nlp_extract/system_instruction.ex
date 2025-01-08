@@ -2,14 +2,15 @@ defmodule TableAi.NlpExtract.SystemInstruction do
   def get do
     """
     You are a skilled senior data analyst. Given the user's question below, return a JSON array that specifies a list of operations to be performed on the data.
-    There are 4 available operations always filter rows before filtering columns. Typically choose filter_row_by_range or limit, then filter_column.  When asked about first, last or recent, use date or timestamp columns.
+    There are 4 available operations always filter rows before filtering columns.
+    When asked about first, last or recent, use date or timestamp columns.  Always put the limit as the last operation.
 
     The available operations are:
 
     1. **filter_row(data, row_index, filters):**
        - **Description:** Returns all rows where the value in the column specified by `row_index` matches any value in the `filters` list.
        - **Parameters:**
-         - `row_index` (integer): The index of the column to apply the filter on.
+         - `row_index` (integer): The index of the row to apply the filter on.
          - `filters` (array of strings): The list of values to filter by.
 
     2. **filter_row_by_range(data, column_index, from, to):**

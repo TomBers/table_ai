@@ -1,7 +1,8 @@
 defmodule TableAi.Interface do
   alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
   alias TableAi.Structs.NLPQuery
-  alias TableAi.LlmInterface
+  # alias TableAi.LlmInterface
+  alias TableAi.{OpenaiInterface, OpenaiExtract}
 
   require Logger
 
@@ -9,16 +10,16 @@ defmodule TableAi.Interface do
 
   def gen_rows(query, pid) do
     # 1_031_289
-    imdb_length = 2
+    imdb_length = 10
     df = DataLoader.file(query.file_path, imdb_length)
 
     # This is just grabbing the headers from the CSV
     columns = Enum.take(df, 1) |> Enum.at(0)
-    # First row seems to make the results worse
-    # first_row = Enum.take(df, 2) |> Enum.at(1) |> Enum.join(", ")
+    # First 10 rows of the CSV
+    data = Enum.take(df, 10) |> to_json_data()
 
     prompt =
-      "I have a spreadsheet with columns [#{columns |> Enum.join(", ")}] and the question ```#{query.user_query}```."
+      "I have a csv with columns [#{columns |> Enum.join(", ")}], this is the first 10 columns #{data}.  Use the columns and example data to answer the question: #{query.user_query}"
 
     Logger.info("Prompt: #{prompt}")
 
@@ -28,7 +29,7 @@ defmodule TableAi.Interface do
         # TransformSteps.example_steps(query.file_name)
       else
         # TODO - do some real world testing!!
-        TableAi.OpenaiInterface.run(prompt)
+        OpenaiInterface.run(prompt)
         |> OpenaiExtract.extract_steps_from_response()
 
         # instructions = SystemInstruction.get()
@@ -50,5 +51,17 @@ defmodule TableAi.Interface do
     TransformMachine.emit_results(query, pid)
 
     query
+  end
+
+  def to_json_data(data) do
+    [headers | rows] = data
+
+    rows
+    |> Enum.map(fn row ->
+      headers
+      |> Enum.zip(row)
+      |> Enum.into(%{})
+    end)
+    |> Jason.encode!()
   end
 end

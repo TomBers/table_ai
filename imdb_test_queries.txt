@@ -3,3 +3,5 @@ Get the 5 highest rated movies from the 60’s?
 Get me the top 10 action movies.
 Get me the first movie from each decade
 Get me movies where the rating matches the year it was released in, e.g. 1930s movie with a rating of 3.0
+
+Get me movies where the rating matches the year it was released in, e.g. 1955 movie with a rating of 5.5

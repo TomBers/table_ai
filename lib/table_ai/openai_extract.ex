@@ -1,6 +1,23 @@
-defmodule OpenaiExtract do
+defmodule TableAi.OpenaiExtract do
   def run do
-    test_res() |> extract_steps_from_response()
+    # test_res() |> extract_steps_from_response()
+    [
+      %{
+        "column_index" => 6,
+        "column_type" => "int",
+        "from" => 1960,
+        "method" => "filter_row_by_range",
+        "to" => 1969
+      },
+      # %{"filters" => ["movie"], "method" => "filter_row", "row_index" => 1},
+      %{
+        "column_index" => 4,
+        "column_type" => "float",
+        "method" => "limit",
+        "number" => 5,
+        "order" => "desc"
+      }
+    ]
   end
 
   def extract_steps_from_response(response) do
@@ -10,7 +27,8 @@ defmodule OpenaiExtract do
     |> Map.get("content")
     |> Jason.decode!()
     |> Map.get("steps")
-    |> Enum.reverse()
+
+    # |> Enum.reverse()
   end
 
   def test_res do

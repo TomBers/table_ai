@@ -4,10 +4,29 @@ defmodule TableAi.NlpExtract.TransformMachine do
   end
 
   def emit_results(query, pid, error_fixes \\ []) do
-    formatted_rows =
+    # These are the batched results, so Limit will applied at each level
+
+    batched_rows =
       TableAi.FlowProcessing.FlowCsv.process_file(query.file_path, query.steps, error_fixes)
 
+    # ** This consolidates batch results to respect limits **
+    formatted_rows =
+      if has_limit_step(query.steps) do
+        %{batched_rows | data: run_limit_step(batched_rows, query.steps)}
+      else
+        batched_rows
+      end
+
     send(pid, {:rows, formatted_rows})
+  end
+
+  def run_limit_step(batch_rows, steps) do
+    limit = Enum.find(steps, fn x -> x["method"] == "limit" end)
+    run_filters([limit], Map.get(batch_rows, :data, []))
+  end
+
+  def has_limit_step(steps) do
+    Enum.any?(steps, fn x -> x["method"] == "limit" end)
   end
 
   def run_filters(res, df) do
@@ -85,7 +104,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     end)
   end
 
-  def order_by_column(data, column_index, ~c"date", order) do
+  def order_by_column(data, column_index, "date", order) do
     data
     |> Enum.sort_by(
       fn row ->
@@ -98,7 +117,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     )
   end
 
-  def order_by_column(data, column_index, ~c"timestamp", order) do
+  def order_by_column(data, column_index, "timestamp", order) do
     data
     |> Enum.sort_by(
       fn row ->
@@ -111,7 +130,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     )
   end
 
-  def order_by_column(data, column_index, ~c"int") do
+  def order_by_column(data, column_index, "int", order) do
     # IO.inspect("Order by Int")
 
     data
@@ -121,23 +140,27 @@ defmodule TableAi.NlpExtract.TransformMachine do
         val
       end,
       # Use the Kernel comparison operator
-      &Kernel.>=/2
+      case order do
+        "asc" -> &Kernel.<=/2
+        "desc" -> &Kernel.>=/2
+      end
     )
   end
 
-  def order_by_column(data, column_index, ~c"float") do
-    # IO.inspect("Order by Float")
-
+  def order_by_column(data, column_index, "float", order) do
     data
     |> Enum.sort_by(
       fn row ->
         Float.parse(Enum.at(row, column_index))
       end,
-      &Kernel.>=/2
+      case order do
+        "asc" -> &Kernel.<=/2
+        "desc" -> &Kernel.>=/2
+      end
     )
   end
 
-  def order_by_column(data, column_index, column_type, order) do
+  def order_by_column(data, column_index, _column_type, order) do
     # IO.inspect(column_type, label: "Order by Col")
 
     data
@@ -202,13 +225,16 @@ defmodule TableAi.NlpExtract.TransformMachine do
     # IO.inspect("Filter by Int")
 
     Stream.filter(data, fn row ->
-      case Enum.at(row, column_index) |> Integer.parse() do
+      case Enum.at(row, column_index) |> parse_int() do
         {int, _} -> int >= from_int and int <= to_int
         _ -> false
       end
     end)
-    |> order_by_column(column_index, ~c"int")
+    |> order_by_column(column_index, "int", "desc")
   end
+
+  def parse_int(nil), do: 0
+  def parse_int(val), do: Integer.parse(val)
 
   def filter_by_float(data, column_index, from_float, to_float) do
     # IO.inspect("Filter by Float")
@@ -219,7 +245,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
         _ -> false
       end
     end)
-    |> order_by_column(column_index, ~c"float")
+    |> order_by_column(column_index, "float", "desc")
   end
 
   def extact_columns(row, columns) do
