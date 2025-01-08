@@ -188,112 +188,112 @@ defmodule TableAi.OpenaiInterface do
     }
   end
 
-  def response_format do
-    %{
-      type: "json_schema",
-      json_schema: %{
-        name: "transformation_steps",
-        schema: %{
-          type: "object",
-          properties: %{
-            steps: %{
-              type: "array",
-              items: %{
-                type: "object",
-                properties: %{
-                  method: %{
-                    type: "string",
-                    description: "The method to apply to the data.",
-                    enum: [
-                      "filter_row",
-                      "filter_row_by_range",
-                      "filter_column",
-                      "limit"
-                    ]
-                  },
-                  column_type: %{
-                    type: "string",
-                    description:
-                      "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].",
-                    enum: ["date", "timestamp", "int", "string", "float"]
-                  },
-                  column_index: %{
-                    type: "integer",
-                    description: "The index of the column to apply the filter on."
-                  },
-                  from: %{
-                    anyOf: [
-                      %{
-                        type: "string"
-                      },
-                      %{
-                        type: "number"
-                      },
-                      %{
-                        type: "integer"
-                      }
-                    ],
-                    description: "The start for the filter"
-                  },
-                  to: %{
-                    anyOf: [
-                      %{
-                        type: "string"
-                      },
-                      %{
-                        type: "number"
-                      },
-                      %{
-                        type: "integer"
-                      }
-                    ],
-                    description: "The end for the filter."
-                  },
-                  columns: %{
-                    type: "array",
-                    items: %{
-                      type: "integer",
-                      description: "The indices of the columns to include."
-                    },
-                    description: "The indices of the columns to include."
-                  },
-                  filters: %{
-                    type: "array",
-                    items: %{
-                      type: "string",
-                      description: "The list of values to filter by."
-                    },
-                    description: "The list of values to filter by."
-                  },
-                  row_index: %{
-                    type: "integer",
-                    description: "The index of the row to apply the filter on."
-                  },
-                  number: %{type: "integer", description: "The number of rows to return"},
-                  order: %{
-                    type: "string",
-                    description: "The order to sort the data. Can be one of ['asc' or 'desc'].",
-                    enum: ["asc", "desc"]
-                  }
-                },
-                required: [
-                  "method"
-                  #   # "column_index",
-                  #   # "row_index",
-                  #   # "column_type",
-                  #   # "from",
-                  #   # "to",
-                  #   # "filters"
-                ],
-                additionalProperties: false
-              }
-            }
-          },
-          required: ["steps"],
-          additionalProperties: false
-        },
-        strict: false
-      }
-    }
-  end
+  # def response_format do
+  #   %{
+  #     type: "json_schema",
+  #     json_schema: %{
+  #       name: "transformation_steps",
+  #       schema: %{
+  #         type: "object",
+  #         properties: %{
+  #           steps: %{
+  #             type: "array",
+  #             items: %{
+  #               type: "object",
+  #               properties: %{
+  #                 method: %{
+  #                   type: "string",
+  #                   description: "The method to apply to the data.",
+  #                   enum: [
+  #                     "filter_row",
+  #                     "filter_row_by_range",
+  #                     "filter_column",
+  #                     "limit"
+  #                   ]
+  #                 },
+  #                 column_type: %{
+  #                   type: "string",
+  #                   description:
+  #                     "The type of the column to filter by. Can be one of ['date', 'timestamp', 'int', 'string' or 'float'].",
+  #                   enum: ["date", "timestamp", "int", "string", "float"]
+  #                 },
+  #                 column_index: %{
+  #                   type: "integer",
+  #                   description: "The index of the column to apply the filter on."
+  #                 },
+  #                 from: %{
+  #                   anyOf: [
+  #                     %{
+  #                       type: "string"
+  #                     },
+  #                     %{
+  #                       type: "number"
+  #                     },
+  #                     %{
+  #                       type: "integer"
+  #                     }
+  #                   ],
+  #                   description: "The start for the filter"
+  #                 },
+  #                 to: %{
+  #                   anyOf: [
+  #                     %{
+  #                       type: "string"
+  #                     },
+  #                     %{
+  #                       type: "number"
+  #                     },
+  #                     %{
+  #                       type: "integer"
+  #                     }
+  #                   ],
+  #                   description: "The end for the filter."
+  #                 },
+  #                 columns: %{
+  #                   type: "array",
+  #                   items: %{
+  #                     type: "integer",
+  #                     description: "The indices of the columns to include."
+  #                   },
+  #                   description: "The indices of the columns to include."
+  #                 },
+  #                 filters: %{
+  #                   type: "array",
+  #                   items: %{
+  #                     type: "string",
+  #                     description: "The list of values to filter by."
+  #                   },
+  #                   description: "The list of values to filter by."
+  #                 },
+  #                 row_index: %{
+  #                   type: "integer",
+  #                   description: "The index of the row to apply the filter on."
+  #                 },
+  #                 number: %{type: "integer", description: "The number of rows to return"},
+  #                 order: %{
+  #                   type: "string",
+  #                   description: "The order to sort the data. Can be one of ['asc' or 'desc'].",
+  #                   enum: ["asc", "desc"]
+  #                 }
+  #               },
+  #               required: [
+  #                 "method"
+  #                 #   # "column_index",
+  #                 #   # "row_index",
+  #                 #   # "column_type",
+  #                 #   # "from",
+  #                 #   # "to",
+  #                 #   # "filters"
+  #               ],
+  #               additionalProperties: false
+  #             }
+  #           }
+  #         },
+  #         required: ["steps"],
+  #         additionalProperties: false
+  #       },
+  #       strict: false
+  #     }
+  #   }
+  # end
 end
