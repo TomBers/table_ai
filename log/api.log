@@ -1,0 +1,23 @@
+
+09:27:29.086 [info] Running TableAiWeb.Endpoint with Bandit 1.6.1 at 127.0.0.1:4000 (http)
+09:27:29.088 [info] Access TableAiWeb.Endpoint at http://localhost:4000
+09:27:29.153 [info] CONNECTED TO Phoenix.LiveView.Socket in 13µs
+  Transport: :longpoll
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "OQwVdiUpfy0sDiR5KEYFGHInTBsLPyRcfJMElnGkjCO5o0suKB6WlPb7", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/app.css", "1" => "http://localhost:4000/assets/app.js"}, "vsn" => "2.0.0"}
+09:27:29.759 [info] GET /talk/uploads/imdb
+09:27:29.767 [info] Sent 200 in 7ms
+09:27:29.829 [info] CONNECTED TO Phoenix.LiveView.Socket in 8µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "JQcaZAQAaA83BF8uPzoHXwwPPgM4OyIhzABWMGPIqI4bxLq25jDO_TdJ", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/app.css", "1" => "http://localhost:4000/assets/app.js"}, "vsn" => "2.0.0"}
+09:27:32.800 [info] Prompt: I have a spreadsheet with columns [id, title, type, genres, averageRating, numVotes, releaseYear] and the question ```bob```.
+09:27:32.804 [info] Steps: [%{"column_index" => 6, "column_type" => "int", "from" => 1960, "method" => "filter_row_by_range", "to" => 1969}, %{"column_index" => 4, "column_type" => "float", "from" => 7, "method" => "filter_row_by_range", "to" => nil}, %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}]
+09:28:55.259 [info] GET /talk/uploads/imdb
+09:28:55.262 [info] Sent 200 in 3ms
+09:28:55.312 [info] CONNECTED TO Phoenix.LiveView.Socket in 9µs
+  Transport: :websocket
+  Serializer: Phoenix.Socket.V2.JSONSerializer
+  Parameters: %{"_csrf_token" => "EwxqBR8pUgkVHh8-JjQ7Bks8PQZXWA0YLJ26VnjOSStraBMkrYGJ07Ks", "_live_referer" => "undefined", "_mount_attempts" => "0", "_mounts" => "0", "_track_static" => %{"0" => "http://localhost:4000/assets/app.css", "1" => "http://localhost:4000/assets/app.js"}, "vsn" => "2.0.0"}
+09:29:02.525 [info] Prompt: I have a spreadsheet with columns [id, title, type, genres, averageRating, numVotes, releaseYear] and the question ```schema results```.
+09:29:02.530 [info] Steps: [%{"column_index" => 4, "column_type" => "float", "from" => 7, "method" => "filter_row_by_range", "to" => 10}, %{"column_index" => 6, "column_type" => "int", "from" => 1960, "method" => "filter_row_by_range", "to" => 1969}, %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}]

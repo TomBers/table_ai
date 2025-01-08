@@ -62,7 +62,8 @@ defmodule TableAi.MixProject do
       {:openai_ex, "~> 0.8.4"},
       {:csv, "~> 3.0"},
       {:flow, "~> 1.2"},
-      {:req, "~> 0.5.8"}
+      {:req, "~> 0.5.8"},
+      {:logger_file_backend, "~> 0.0.14"}
     ]
   end
 
