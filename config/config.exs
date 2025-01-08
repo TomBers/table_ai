@@ -23,7 +23,7 @@ config :table_ai, TableAiWeb.Endpoint,
   live_view: [signing_salt: "VHLkeIrx"]
 
 # TURN ON the LLM
-config :table_ai, use_test_data: true
+config :table_ai, use_test_data: false
 
 # config :logger,
 #   backends: [{LoggerFileBackend, :api_log}]

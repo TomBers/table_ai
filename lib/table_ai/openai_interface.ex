@@ -35,7 +35,7 @@ defmodule TableAi.OpenaiInterface do
     body = %{
       model: @model,
       messages: messages,
-      response_format: response_format()
+      response_format: json_schema()
     }
 
     headers = [
@@ -60,7 +60,7 @@ defmodule TableAi.OpenaiInterface do
             steps: %{
               type: "array",
               items: %{
-                oneOf: [
+                anyOf: [
                   %{
                     type: "object",
                     properties: %{
