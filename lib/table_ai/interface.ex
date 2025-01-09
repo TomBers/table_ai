@@ -1,17 +1,24 @@
 defmodule TableAi.Interface do
-  alias TableAi.NlpExtract.{TransformMachine, TransformSteps, DataLoader, SystemInstruction}
-  alias TableAi.Structs.NLPQuery
-  # alias TableAi.LlmInterface
+  alias TableAi.NlpExtract.{
+    TransformMachine,
+    TransformSteps,
+    DataLoader,
+    EnumDetector
+  }
+
   alias TableAi.{OpenaiInterface, OpenaiExtract}
 
   require Logger
 
+  # TODO set the sample size relatd to number of rows
+  @sample_size 100_000
+  # This is currently hardcoded from the IMDB dataset - make a fraction of sample_size
+  @threshold 30
+
   @use_test_data Application.compile_env(:table_ai, :use_test_data)
 
   def gen_rows(query, pid) do
-    # 1_031_289
-    sample_size = 100_000
-    df = DataLoader.file(query.file_path, sample_size)
+    df = DataLoader.file(query.file_path, @sample_size)
 
     # This is just grabbing the headers from the CSV
     columns = Enum.take(df, 1) |> Enum.at(0)
@@ -19,10 +26,10 @@ defmodule TableAi.Interface do
     data = Enum.take(df, 10) |> to_json_data()
 
     {:ok, ennumerations} =
-      Enum.take(df, sample_size)
-      |> TableAi.NlpExtract.EnumDetector.detect_likely_enums(
-        sample_size: sample_size,
-        threshold: 80,
+      Enum.take(df, @sample_size)
+      |> EnumDetector.detect_likely_enums(
+        sample_size: @sample_size,
+        threshold: @threshold,
         case_sensitive: false
       )
       |> IO.inspect(label: "Detected enums")
