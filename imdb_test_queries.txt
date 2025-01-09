@@ -3,6 +3,7 @@ Get the 5 highest rated movies from the 60’s?
 Get me the top 10 action movies.
 
 Get me the top 10 comedy movies where the number of votes is greater than 100
+Get me the top 10 comedy tv shows where the number of votes is greater than 100
 
 Get me the first movie from each decade
 Get me movies where the rating matches the year it was released in, e.g. 1930s movie with a rating of 3.0
