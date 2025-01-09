@@ -30,7 +30,7 @@ defmodule TableAi.Interface do
       |> EnumDetector.detect_likely_enums(
         sample_size: @sample_size,
         threshold: @threshold,
-        case_sensitive: false
+        case_sensitive: true
       )
       |> IO.inspect(label: "Detected enums")
 

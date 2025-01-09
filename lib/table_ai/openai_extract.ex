@@ -26,6 +26,27 @@ defmodule TableAi.OpenaiExtract do
         "order" => "desc"
       }
     ]
+
+    # Get me the top 10 highest rated comedy tv shows with number of votes is greater than 1000
+    [
+      %{"filters" => ["tvMiniSeries", "tvSeries"], "method" => "filter_row", "row_index" => 2},
+      %{"filters" => ["Comedy"], "method" => "filter_row", "row_index" => 3},
+      %{
+        "column_index" => 5,
+        "column_type" => "int",
+        "from" => 1000,
+        "method" => "filter_row_by_range",
+        "to" => 1_000_000
+      },
+      %{
+        "column_index" => 4,
+        "column_type" => "float",
+        "method" => "limit",
+        "number" => 10,
+        "order" => "desc"
+      },
+      %{"columns" => [0, 1, 2, 3, 4, 5, 6], "method" => "filter_column"}
+    ]
   end
 
   def extract_steps_from_response(response) do
