@@ -1,10 +1,15 @@
 <.simple_form for={@form} phx-submit="save" phx-change="edit">
-  <.input name="query" value="" id={@query_id} label="Enter your question" />
+  <div class="relative">
+    <.input name="query" value="" id={@query_id} label="Enter your question" />
+    <div class="absolute right-2 top-9">
+      <.spinner :if={@loading} />
+    </div>
+  </div>
 </.simple_form>
 
 <%= if length(@nlp_query.errors) > 0 do %>
   <p>
-    There are <%= length(@nlp_query.errors) %> errors in the data, you can autofix them.
+    There are {length(@nlp_query.errors)} errors in the data, you can autofix them.
   </p>
   <br />
   <.button phx-click="autofix" phx-value="autofix" class="btn btn-primary">Autofix</.button>
