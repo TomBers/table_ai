@@ -41,7 +41,7 @@ defmodule TableAi.Interface do
 
     steps =
       if @use_test_data do
-        OpenaiExtract.run()
+        OpenaiExtract.example_steps()
         # TransformSteps.example_steps(query.file_name)
       else
         # TODO - do some real world testing!!
