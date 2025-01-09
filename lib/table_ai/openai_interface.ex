@@ -4,6 +4,13 @@ defmodule TableAi.OpenaiInterface do
   @url "https://api.openai.com/v1/chat/completions"
   @model "gpt-4o-2024-08-06"
 
+  # TODO - test the different models
+  @available_models [
+    "gpt-4o-2024-08-06",
+    "gpt-4o-2024-11-20",
+    "chatgpt-4o-latest"
+  ]
+
   def test do
     prompt =
       "I have a spreadsheet with columns [id, title, type, genres, averageRating, numVotes, releaseYear] and the question ```Can you get me content from the 60s with rating higher than 7 with London in the title```."
