@@ -110,7 +110,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
       fn row ->
         case Date.from_iso8601(Enum.at(row, column_index)) do
           {:ok, date} -> date
-          _ -> Date.from_iso8601("0000-01-01")
+          _ -> ~D[1979-01-23]
         end
       end,
       {String.to_atom(order), Date}
@@ -123,7 +123,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
       fn row ->
         case DateTime.from_iso8601(Enum.at(row, column_index)) do
           {:ok, datetime, _} -> datetime
-          _ -> DateTime.from_iso8601("0000-01-01T00:00:00Z")
+          _ -> ~U[1979-01-23 23:50:07Z]
         end
       end,
       {String.to_atom(order), DateTime}
@@ -136,8 +136,10 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        {val, _} = Integer.parse(Enum.at(row, column_index))
-        val
+        case Integer.parse(Enum.at(row, column_index)) do
+          {val, _} -> val
+          _ -> 0
+        end
       end,
       # Use the Kernel comparison operator
       case order do

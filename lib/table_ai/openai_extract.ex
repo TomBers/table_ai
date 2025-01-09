@@ -1,5 +1,6 @@
 defmodule TableAi.OpenaiExtract do
   def example_steps do
+    # Get me the top 10 horror movies from the 1980s where the number of votes is greater than 100
     [
       %{"filters" => ["movie"], "method" => "filter_row", "row_index" => 2},
       %{"filters" => ["horror"], "method" => "filter_row", "row_index" => 3},

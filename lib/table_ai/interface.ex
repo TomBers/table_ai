@@ -42,15 +42,9 @@ defmodule TableAi.Interface do
     steps =
       if @use_test_data do
         OpenaiExtract.example_steps()
-        # TransformSteps.example_steps(query.file_name)
       else
-        # TODO - do some real world testing!!
         OpenaiInterface.run(prompt)
         |> OpenaiExtract.extract_steps_from_response()
-
-        # instructions = SystemInstruction.get()
-        # {:ok, steps} = LlmInterface.get(prompt, instructions)
-        # steps
       end
 
     Logger.info("Steps: #{inspect(steps)}")
