@@ -3,7 +3,7 @@ defmodule TableAi.NlpExtract.SystemInstruction do
     """
     You are a skilled senior data analyst. Given the user's question below, return a JSON array that specifies a list of operations to be performed on the data.
     There are 4 available operations always filter rows before filtering columns.
-    When asked about first, last or recent, use date or timestamp columns.  Always put the limit as the last operation.
+    When asked about first, last or recent, use date or timestamp columns.  You can use as many steps as needed to answer the question.
 
     The available operations are:
 

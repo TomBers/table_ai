@@ -10,16 +10,23 @@ defmodule TableAi.Interface do
 
   def gen_rows(query, pid) do
     # 1_031_289
-    imdb_length = 10
-    df = DataLoader.file(query.file_path, imdb_length)
+    sample_size = 100_000
+    df = DataLoader.file(query.file_path, sample_size)
 
     # This is just grabbing the headers from the CSV
     columns = Enum.take(df, 1) |> Enum.at(0)
     # First 10 rows of the CSV
     data = Enum.take(df, 10) |> to_json_data()
 
+    ennumerations =
+      Enum.take(df, sample_size)
+      |> detect_likely_enums(sample_size)
+      |> Jason.encode!()
+
+    # |> IO.inspect(label: "Detected enums")
+
     prompt =
-      "I have a csv with columns [#{columns |> Enum.join(", ")}], this is the first 10 columns #{data}.  Use the columns and example data to answer the question: #{query.user_query}"
+      "I have a csv with columns [#{columns |> Enum.join(", ")}], with these enummerations #{ennumerations}. This is the first 10 columns #{data}.  Use the columns and example data to answer the question: #{query.user_query}"
 
     Logger.info("Prompt: #{prompt}")
 
@@ -63,5 +70,34 @@ defmodule TableAi.Interface do
       |> Enum.into(%{})
     end)
     |> Jason.encode!()
+  end
+
+  def detect_likely_enums(data, sample_size \\ 100, threshold \\ 10) do
+    [headers | rows] = data
+    sample_rows = Enum.take(rows, sample_size)
+
+    headers
+    |> Enum.with_index()
+    |> Enum.map(fn {header, index} ->
+      values =
+        sample_rows
+        |> Enum.map(&Enum.at(&1, index))
+        |> Enum.reject(&(&1 == ""))
+
+      enum_vals =
+        values
+        |> Enum.flat_map(fn value ->
+          if String.contains?(value, ","),
+            do: String.split(value, ",", trim: true),
+            else: [value]
+        end)
+        |> MapSet.new()
+
+      {header, enum_vals}
+    end)
+    |> Enum.into(%{})
+    # If unique values are less than threshold % of sample size, consider it an enum
+    |> Enum.reject(fn {_, enum_vals} -> MapSet.size(enum_vals) > threshold end)
+    |> Enum.map(fn {header, enum_vals} -> %{header => MapSet.to_list(enum_vals)} end)
   end
 end
