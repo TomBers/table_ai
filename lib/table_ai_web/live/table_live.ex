@@ -50,10 +50,12 @@ defmodule TableAiWeb.TableLive do
   end
 
   def handle_info({:rows, res}, socket) do
-    rows = Map.get(res, :data, [])
+    streams = Map.get(res, :data, [])
     errors = Map.get(res, :errors, [])
 
-    Logger.info("Rows: #{inspect(rows)}")
+    rows = streams |> Enum.map(&Enum.to_list/1)
+
+    Logger.info("Processed Rows: #{inspect(rows)}")
 
     {:noreply,
      socket

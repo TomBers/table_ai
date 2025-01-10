@@ -32,12 +32,13 @@ defmodule TableAi.Interface do
         threshold: @threshold,
         case_sensitive: true
       )
-      |> IO.inspect(label: "Detected enums")
+
+    # |> IO.inspect(label: "Detected enums")
 
     prompt =
       "I have a csv with columns [#{columns |> Enum.join(", ")}], with these enummerations #{Jason.encode!(ennumerations)}. This is the first 10 columns #{data}.  Use the columns and example data to answer the question: #{query.user_query}"
 
-    Logger.info("Prompt: #{prompt}")
+    Logger.info("Query: #{query.user_query}")
 
     steps =
       if @use_test_data do
