@@ -25,12 +25,12 @@ config :table_ai, TableAiWeb.Endpoint,
 # TURN ON the LLM
 config :table_ai, use_test_data: true
 
-# config :logger,
-#   backends: [{LoggerFileBackend, :api_log}]
+config :logger,
+  backends: [{LoggerFileBackend, :api_log}]
 
-# config :logger, :api_log,
-#   path: "log/api.log",
-#   level: :info
+config :logger, :api_log,
+  path: "log/api.log",
+  level: :info
 
 # Configures the mailer
 #
