@@ -12,7 +12,19 @@ defmodule TableAiWeb.TableLiveTest do
     assert length(rows) == 10
 
     IO.inspect(rows, label: "Rows")
-    # assert rows == expected_rows
+
+    first_row = [
+      "1",
+      "tt7151672",
+      "Choufli Hal",
+      "tvSeries",
+      "Comedy",
+      "9.7",
+      "2979",
+      "2005"
+    ]
+
+    assert hd(rows) == first_row
   end
 
   def get_rendered_rows(view, query) do
