@@ -7,10 +7,17 @@ defmodule TableAiWeb.TableLiveTest do
 
   test "processes query and displays results in table", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/talk/uploads/imdb")
+    rows = get_rendered_rows(view, "select * from movies")
 
-    # Submit the query
+    assert length(rows) == 10
+
+    IO.inspect(rows, label: "Rows")
+    # assert rows == expected_rows
+  end
+
+  def get_rendered_rows(view, query) do
     view
-    |> form("form", %{query: "show me all ages above 30"})
+    |> form("form", %{query: query})
     |> render_submit()
 
     # Wait for processing to complete
@@ -20,10 +27,14 @@ defmodule TableAiWeb.TableLiveTest do
     # Get the rendered content
     rows = render(view) |> find_rows()
 
-    # Assert specific values in the table
-    # Replace with actual expected values
-    assert rows != []
-    assert length(rows) == 11
+    [_ | vals] = rows
+    vals |> Enum.map(fn row -> extract_row_vals(row) end)
+  end
+
+  def extract_row_vals(row) do
+    Floki.find(row, "td")
+    |> Enum.map(&Floki.text/1)
+    |> Enum.map(&String.trim/1)
   end
 
   defp find_rows(html) do
