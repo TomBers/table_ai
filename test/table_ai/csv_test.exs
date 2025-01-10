@@ -147,7 +147,7 @@ defmodule CSVTest do
         "column_index" => 10,
         "column_type" => "date",
         "from" => "2021-01-01",
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => "2023-01-01"
       }
     ]

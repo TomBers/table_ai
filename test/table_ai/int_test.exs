@@ -14,7 +14,7 @@ defmodule TableAi.IntTest do
         "column_index" => 13,
         "column_type" => "int",
         "from" => 100,
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => 500
       }
     ]

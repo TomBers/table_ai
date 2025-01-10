@@ -25,6 +25,13 @@ config :table_ai, TableAiWeb.Endpoint,
 # TURN ON the LLM
 config :table_ai, use_test_data: true
 
+# config :logger,
+#   backends: [{LoggerFileBackend, :api_log}]
+
+# config :logger, :api_log,
+#   path: "log/api.log",
+#   level: :info
+
 # Configures the mailer
 #
 # By default it uses the "Local" adapter which stores the emails

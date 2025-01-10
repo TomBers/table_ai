@@ -52,14 +52,14 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "column_index" => 6,
         "column_type" => "int",
         "from" => 1960,
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => 1969
       },
       %{
         "column_index" => 4,
         "column_type" => "float",
         "from" => 7,
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => nil
       },
       %{"filters" => ["London"], "method" => "filter_row", "row_index" => 1}
@@ -72,7 +72,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         "column_index" => 10,
         "column_type" => "date",
         "from" => "2022-01-01",
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => "2023-01-01"
       }
     ]

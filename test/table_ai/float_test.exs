@@ -14,7 +14,7 @@ defmodule TableAi.FloatTest do
         "column_index" => 14,
         "column_type" => "float",
         "from" => 100.0,
-        "method" => "fillter_row_by_range",
+        "method" => "filter_row_by_range",
         "to" => 500.0
       }
     ]
