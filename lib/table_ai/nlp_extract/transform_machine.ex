@@ -108,7 +108,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        case Date.from_iso8601(Enum.at(row, column_index)) do
+        case Date.from_iso8601(Enum.at(row, column_index, "")) do
           {:ok, date} -> date
           _ -> ~D[1979-01-23]
         end
@@ -121,7 +121,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        case DateTime.from_iso8601(Enum.at(row, column_index)) do
+        case DateTime.from_iso8601(Enum.at(row, column_index, "")) do
           {:ok, datetime, _} -> datetime
           _ -> ~U[1979-01-23 23:50:07Z]
         end
@@ -136,7 +136,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        case Integer.parse(Enum.at(row, column_index)) do
+        case Integer.parse(Enum.at(row, column_index, "")) do
           {val, _} -> val
           _ -> 0
         end
@@ -153,7 +153,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        Float.parse(Enum.at(row, column_index))
+        Float.parse(Enum.at(row, column_index, "0.0"))
       end,
       case order do
         "asc" -> &Kernel.<=/2
@@ -168,7 +168,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Enum.sort_by(
       fn row ->
-        Enum.at(row, column_index)
+        Enum.at(row, column_index, "")
       end,
       String.to_atom(order)
     )
@@ -195,7 +195,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Stream.with_index()
     |> Stream.filter(fn {row, _row_index} ->
-      case Enum.at(row, column_index) |> conv_fn.() do
+      case Enum.at(row, column_index, "") |> conv_fn.() do
         {:error, _} ->
           true
 

@@ -7,7 +7,12 @@ defmodule TableAiWeb.TableLiveTest do
 
   test "processes query and displays results in table", %{conn: conn} do
     {:ok, view, _html} = live(conn, ~p"/talk/uploads/imdb")
-    rows = get_rendered_rows(view, "select * from movies")
+
+    rows =
+      get_rendered_rows(
+        view,
+        "Get me the top 10 horror movies from the 1980s where the number of votes is greater than 1000"
+      )
 
     assert length(rows) == 10
 
@@ -15,13 +20,13 @@ defmodule TableAiWeb.TableLiveTest do
 
     first_row = [
       "1",
-      "tt7151672",
-      "Choufli Hal",
-      "tvSeries",
-      "Comedy",
-      "9.7",
-      "2979",
-      "2005"
+      "tt0084787",
+      "The Thing",
+      "movie",
+      "Horror, Mystery, Sci-Fi",
+      "8.2",
+      "484311",
+      "1982"
     ]
 
     assert hd(rows) == first_row

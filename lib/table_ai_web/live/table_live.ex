@@ -55,7 +55,7 @@ defmodule TableAiWeb.TableLive do
 
     rows = streams |> Enum.map(&Enum.to_list/1)
 
-    Logger.info("Processed Rows: #{inspect(rows)}")
+    Logger.info("Processed Rows: #{length(rows)}")
 
     {:noreply,
      socket
