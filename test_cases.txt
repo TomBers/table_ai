@@ -1,0 +1,6 @@
+File: IMDB
+Can you get me content from the 60s with rating higher than 7 with London in the title?
+Get me the top rated 10 horror movies from the 1980s where the number of votes is greater than 1000
+Get me the top 10 highest rated comedy tv shows with number of votes is greater than 1000
+Get me movies where the rating matches the year it was released in, e.g. 1955 movie with a rating of 5.5
+Get me the highest rated movie from each decade

@@ -2,7 +2,11 @@ defmodule TableAi.OpenaiInterface do
   alias TableAi.NlpExtract.SystemInstruction
 
   @url "https://api.openai.com/v1/chat/completions"
-  @model "gpt-4o-2024-08-06"
+  # @model "gpt-4o-2024-08-06"
+  # Updated to latest model
+  @model "gpt-4o-2024-11-20"
+
+  # Currently don't have access to o1 models'
 
   # TODO - test the different models
   @available_models [
@@ -28,7 +32,8 @@ defmodule TableAi.OpenaiInterface do
   def get_massages(prompt, transform_instructions) do
     [
       %{
-        "role" => "developer",
+        # "role" => "developer",
+        "role" => "user",
         "content" => transform_instructions
       },
       %{

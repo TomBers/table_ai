@@ -6,7 +6,7 @@ defmodule TableAiWeb.TableLive do
   require Logger
 
   def mount(params, _session, socket) do
-    file_name = Map.get(params, "path", "customers-2000000.csv")
+    file_name = Map.get(params, "path")
 
     path =
       Path.join(Application.app_dir(:table_ai, "priv/static/uploads"), Path.basename(file_name))
@@ -19,12 +19,11 @@ defmodule TableAiWeb.TableLive do
        form: %{},
        rows: [],
        nlp_query: nlp_query,
-       query_id: UUID.generate(),
-       loading: false
+       query_id: UUID.generate()
      )}
   end
 
-  def handle_event("save", %{"query" => user_query}, socket) do
+  def handle_event("send_query", %{"query" => user_query}, socket) do
     pid = self()
 
     q = TableAi.Structs.NLPQuery.reset_query(socket.assigns.nlp_query, user_query)
@@ -34,33 +33,37 @@ defmodule TableAiWeb.TableLive do
 
     {:noreply,
      socket
-     |> assign(nlp_query: nlp_query, rows: [], errors: [], loading: true)}
-  end
-
-  def handle_event("edit", _params, socket) do
-    {:noreply, socket |> assign(rows: [], loading: false)}
+     |> assign(nlp_query: nlp_query, rows: [], errors: [])}
   end
 
   def handle_event("autofix", _params, socket) do
     pid = self()
     error_fixes = TableAi.DataFix.FixErrors.error_fix(socket.assigns.nlp_query)
-    # IO.inspect(error_fixes, label: "Error Fixes")
     TableAi.NlpExtract.TransformMachine.emit_results(socket.assigns.nlp_query, pid, error_fixes)
 
-    # query_id: UUID.generate()
     {:noreply, socket}
   end
 
   def handle_info({:rows, res}, socket) do
-    # IO.inspect(DateTime.utc_now(), label: "HANDLE INFO")
-    rows = Map.get(res, :data, [])
+    streams = Map.get(res, :data, [])
     errors = Map.get(res, :errors, [])
 
-    # IO.inspect(errors, label: "Errors")
-    Logger.info("Rows: #{inspect(rows)}")
+    rows = streams |> Enum.map(&Enum.to_list/1)
+
+    Logger.info("Processed Rows: #{length(rows)}")
+
+    socket =
+      if length(rows) == 0 do
+        socket |> put_flash(:error, "No rows found")
+      else
+        socket
+      end
 
     {:noreply,
      socket
-     |> assign(rows: rows, nlp_query: socket.assigns.nlp_query, errors: errors, loading: false)}
+     |> assign(
+       rows: rows,
+       nlp_query: %{socket.assigns.nlp_query | errors: errors}
+     )}
   end
 end
