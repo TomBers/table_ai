@@ -1,5 +1,75 @@
 defmodule TableAi.OpenaiExtract do
-  def example_steps do
+  def example_steps(file_name) do
+    case file_name do
+      "imdb" -> imdb()
+      "customers" -> customers()
+      "error_correct" -> error_correct()
+      _ -> []
+    end
+  end
+
+  def error_correct do
+    # "Can you get me all the info for customers who joined between 2021 and 2023"
+    [
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "from" => "2022-01-01",
+        "method" => "filter_row_by_range",
+        "to" => "2023-01-01"
+      }
+    ]
+  end
+
+  def customers do
+    # Can I get contact details from the last 10 customers from Europe
+    [
+      %{
+        "filters" => [
+          "United Kingdom",
+          "Germany",
+          "France",
+          "Italy",
+          "Spain",
+          "Netherlands",
+          "Greece",
+          "Sweden",
+          "Poland",
+          "Belgium",
+          "Finland",
+          "Denmark",
+          "Ireland",
+          "Portugal",
+          "Austria",
+          "Hungary",
+          "Czech Republic",
+          "Romania",
+          "Bulgaria",
+          "Slovakia",
+          "Croatia",
+          "Estonia",
+          "Slovenia",
+          "Latvia",
+          "Lithuania",
+          "Luxembourg",
+          "Malta",
+          "Cyprus"
+        ],
+        "method" => "filter_row",
+        "row_index" => 6
+      },
+      %{
+        "column_index" => 10,
+        "column_type" => "date",
+        "method" => "limit",
+        "number" => 10,
+        "order" => "desc"
+      },
+      %{"columns" => [2, 3, 4, 6, 9, 10], "method" => "filter_column"}
+    ]
+  end
+
+  def imdb do
     # Get me the top 10 horror movies from the 1980s where the number of votes is greater than 1000
     [
       %{"filters" => ["movie"], "method" => "filter_row", "row_index" => 2},
@@ -46,33 +116,6 @@ defmodule TableAi.OpenaiExtract do
     #     "order" => "desc"
     #   },
     #   %{"columns" => [0, 1, 2, 3, 4, 5, 6], "method" => "filter_column"}
-    # ]
-
-    # Can you get me customers from Europe who signed up in the summer of 2021?
-    # [
-    #   %{
-    #     "filters" => [
-    #       "France"
-    #       # "Germany",
-    #       # "Italy",
-    #       # "Spain",
-    #       # "United Kingdom",
-    #       # "Netherlands",
-    #       # "Belgium",
-    #       # "Sweden",
-    #       # "Denmark",
-    #       # "Norway"
-    #     ],
-    #     "method" => "filter_row",
-    #     "row_index" => 6
-    #   },
-    #   %{
-    #     "column_index" => 10,
-    #     "column_type" => "date",
-    #     "from" => "2021-06-01",
-    #     "method" => "filter_row_by_range",
-    #     "to" => "2021-08-31"
-    #   }
     # ]
   end
 

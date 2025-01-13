@@ -195,7 +195,7 @@ defmodule TableAi.NlpExtract.TransformMachine do
     data
     |> Stream.with_index()
     |> Stream.filter(fn {row, _row_index} ->
-      case Enum.at(row, column_index, "") |> conv_fn.() do
+      case Enum.at(row, column_index) |> conv_fn.() do
         {:error, _} ->
           true
 

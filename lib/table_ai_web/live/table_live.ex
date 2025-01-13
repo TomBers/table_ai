@@ -59,6 +59,10 @@ defmodule TableAiWeb.TableLive do
 
     {:noreply,
      socket
-     |> assign(rows: rows, nlp_query: socket.assigns.nlp_query, errors: errors, loading: false)}
+     |> assign(
+       rows: rows,
+       nlp_query: %{socket.assigns.nlp_query | errors: errors},
+       loading: false
+     )}
   end
 end

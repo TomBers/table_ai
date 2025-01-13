@@ -29,6 +29,7 @@ defmodule TableAi.FlowProcessing.FlowCsv do
         dataframe = TransformMachine.run_filters(steps, fixed_rows) |> Enum.to_list()
 
         errors = FixErrors.get_errors(steps, fixed_rows)
+        # IO.inspect(errors, label: "Found Errors")
 
         case dataframe do
           [] -> []

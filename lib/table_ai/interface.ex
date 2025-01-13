@@ -1,7 +1,6 @@
 defmodule TableAi.Interface do
   alias TableAi.NlpExtract.{
     TransformMachine,
-    TransformSteps,
     DataLoader,
     EnumDetector
   }
@@ -47,7 +46,7 @@ defmodule TableAi.Interface do
 
     steps =
       if @use_test_data do
-        OpenaiExtract.example_steps()
+        OpenaiExtract.example_steps(query.file_name)
       else
         OpenaiInterface.run(prompt)
         |> OpenaiExtract.extract_steps_from_response()
@@ -59,7 +58,7 @@ defmodule TableAi.Interface do
       query
       | df: df,
         file_path: query.file_path,
-        headers: TransformSteps.get_headers(steps, columns),
+        headers: get_headers(steps, columns),
         steps: steps,
         errors: []
     }
@@ -69,7 +68,7 @@ defmodule TableAi.Interface do
     query
   end
 
-  def to_json_data(data) do
+  defp to_json_data(data) do
     [headers | rows] = data
 
     rows
@@ -79,5 +78,25 @@ defmodule TableAi.Interface do
       |> Enum.into(%{})
     end)
     |> Jason.encode!()
+  end
+
+  defp get_headers(res, columns) do
+    cols =
+      res
+      |> Enum.find(fn x -> x["method"] == "filter_column" end)
+
+    case cols do
+      nil ->
+        if is_list(columns) do
+          columns
+        else
+          columns |> String.split(",")
+        end
+
+      _ ->
+        cols
+        |> Map.get("columns")
+        |> Enum.map(fn x -> Enum.at(columns, x) end)
+    end
   end
 end
