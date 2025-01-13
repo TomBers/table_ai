@@ -2,7 +2,6 @@ defmodule TableAiWeb.TableLiveTest do
   use TableAiWeb.ConnCase
   import Phoenix.LiveViewTest
 
-  @path "/talk/uploads/imdb"
   @timeout 2000
 
   test "processes query and displays results in table", %{conn: conn} do
@@ -16,7 +15,7 @@ defmodule TableAiWeb.TableLiveTest do
 
     assert length(rows) == 10
 
-    IO.inspect(rows, label: "Rows")
+    # IO.inspect(rows, label: "Rows")
 
     first_row = [
       "1",

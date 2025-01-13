@@ -24,7 +24,7 @@ defmodule TableAiWeb.TableLive do
      )}
   end
 
-  def handle_event("save", %{"query" => user_query}, socket) do
+  def handle_event("send_query", %{"query" => user_query}, socket) do
     pid = self()
 
     q = TableAi.Structs.NLPQuery.reset_query(socket.assigns.nlp_query, user_query)
@@ -37,9 +37,9 @@ defmodule TableAiWeb.TableLive do
      |> assign(nlp_query: nlp_query, rows: [], errors: [], loading: true)}
   end
 
-  def handle_event("edit", _params, socket) do
-    {:noreply, socket |> assign(rows: [], loading: false)}
-  end
+  # def handle_event("edit", _params, socket) do
+  #   {:noreply, socket |> assign(rows: [], loading: false)}
+  # end
 
   def handle_event("autofix", _params, socket) do
     pid = self()
