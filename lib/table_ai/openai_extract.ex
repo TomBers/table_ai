@@ -14,9 +14,9 @@ defmodule TableAi.OpenaiExtract do
       %{
         "column_index" => 10,
         "column_type" => "date",
-        "from" => "2022-01-01",
+        "from" => "2022-05-01",
         "method" => "filter_row_by_range",
-        "to" => "2023-01-01"
+        "to" => "2026-01-01"
       }
     ]
   end

@@ -52,6 +52,13 @@ defmodule TableAiWeb.TableLive do
 
     Logger.info("Processed Rows: #{length(rows)}")
 
+    socket =
+      if length(rows) == 0 do
+        socket |> put_flash(:error, "No rows found")
+      else
+        socket
+      end
+
     {:noreply,
      socket
      |> assign(
