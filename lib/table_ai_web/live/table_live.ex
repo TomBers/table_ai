@@ -19,8 +19,7 @@ defmodule TableAiWeb.TableLive do
        form: %{},
        rows: [],
        nlp_query: nlp_query,
-       query_id: UUID.generate(),
-       loading: false
+       query_id: UUID.generate()
      )}
   end
 
@@ -34,12 +33,8 @@ defmodule TableAiWeb.TableLive do
 
     {:noreply,
      socket
-     |> assign(nlp_query: nlp_query, rows: [], errors: [], loading: true)}
+     |> assign(nlp_query: nlp_query, rows: [], errors: [])}
   end
-
-  # def handle_event("edit", _params, socket) do
-  #   {:noreply, socket |> assign(rows: [], loading: false)}
-  # end
 
   def handle_event("autofix", _params, socket) do
     pid = self()
@@ -61,8 +56,7 @@ defmodule TableAiWeb.TableLive do
      socket
      |> assign(
        rows: rows,
-       nlp_query: %{socket.assigns.nlp_query | errors: errors},
-       loading: false
+       nlp_query: %{socket.assigns.nlp_query | errors: errors}
      )}
   end
 end

@@ -63,7 +63,7 @@ defmodule TableAi.Interface do
         errors: []
     }
 
-    spawn(fn -> TransformMachine.emit_results(query, pid) end)
+    TransformMachine.emit_results(query, pid)
 
     query
   end
