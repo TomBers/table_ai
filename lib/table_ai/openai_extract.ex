@@ -9,7 +9,7 @@ defmodule TableAi.OpenaiExtract do
   end
 
   def error_correct do
-    # "Can you get me all the info for customers who joined between 2021 and 2023"
+    # "Can you get me all the info for customers who joined between 2022-05-01 and 2026-01-01"
     [
       %{
         "column_index" => 10,
